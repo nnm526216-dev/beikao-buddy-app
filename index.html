@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>备考Buddy</title>
+  <!-- PWA 必需 -->
+  <meta name="theme-color" content="#4f50ff">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" sizes="192x192" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png">
+  <meta name="msapplication-TileImage" content="/icons/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <!-- 字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* 这里原本的样式全部保留，因为代码太长，此处省略，您原来的样式不需要改动 */
+    /* 为了节省篇幅，我将在后面直接附上完整样式 */
+    :root {
+      --bg: #f7f8fa;
+      --bg2: #ffffff;
+      --bg3: #f1f3f6;
+      --border: rgba(80,75,183,0.08);
+      --accent: #4f50ff;
+      --accent2: #ffa75b;
+      --accent3: #32cfa5;
+      --text: #23233a;
+      --text2: #747492;
+      --text3: #b4b8cd;
+      --red: #ff6d6b;
+      --yellow: #ffe880;
+      --shadow-main: 0 2px 16px 0 rgba(80,80,200,0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter','Noto Sans SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    @media (max-width: 480px) {
+      html { font-size: 15px; }
+      .page-header { padding-top: 32px !important;}
+      .stats-row { gap: 7px !important;}
+      .exam-setup { padding: 18px !important;}
+      .card { padding: 14px !important;}
+    }
+    @media (max-width: 350px) {
+      .card { padding: 7px !important;}
+    }
+    .nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--bg2);
+      border-top: 1.5px solid var(--border);
+      display: flex;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 0 16px 0 rgba(110,120,168,0.07);
+      height: 58px;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 9px 0;
+      cursor: pointer;
+      transition: all 0.16s;
+      color: var(--text3);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      border: none;
+      background: none;
+      font-family: inherit;
+    }
+    .nav-item.active { color: var(--accent);}
+    .nav-item svg { width: 22px; height: 22px; stroke-width: 1.6; }
+    @media (max-width:500px){.nav-item{font-size:10px;}}
+    .page { display: none; padding: 0 4vw 85px; animation: up 0.3s cubic-bezier(.35,.82,.48,1); max-width: 700px; margin: 0 auto;}
+    .page.active { display: block; }
+    @keyframes up {
+      from { opacity: 0; transform: translateY(24px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .page-header {
+      padding: 48px 0 20px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+    .page-title {
+      font-size: 1.8em;
+      font-weight: 700;
+      letter-spacing: -0.6px;
+      font-family: 'Inter','Noto Sans SC', sans-serif;
+      color: var(--accent);
+    }
+    .page-sub {
+      font-size: 13px;
+      color: var(--text2);
+      margin-top: 3px;
+      letter-spacing: 0.01em;
+    }
+    .card {
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-main);
+    }
+    .card-label {
+      font-size: 12px;
+      color: var(--text3);
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      font-family: 'DM Mono', monospace;
+      font-weight: 600;
+    }
+    .exam-setup {
+      background: linear-gradient(120deg, #97e6fc 0%, var(--accent) 100%);
+      border-radius: 22px;
+      padding: 30px;
+      margin-bottom: 15px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 24px 0 rgba(0,58,204,0.10);
+      color: #20306e;
+    }
+    .exam-setup::before {
+      content: '';
+      position: absolute;
+      top: -28px; right: -24px;
+      width: 120px; height: 120px;
+      background: rgba(255,255,255,0.14);
+      border-radius: 56%;
+      filter: blur(2px);
+    }
+    .exam-name {
+      font-size: 15px;
+      opacity: 0.90;
+      margin-bottom: 8px;
+      letter-spacing: .03em;
+      font-weight: 500;
+      color: #404090;
+    }
+    .countdown-days {
+      font-size: 3.3em;
+      font-weight: 800;
+      font-family: 'DM Mono', monospace;
+      line-height: 1.1;
+      letter-spacing: -2.5px;
+      color: var(--accent);
+      text-shadow: 0 4px 18px #3e8fff44;
+    }
+    .countdown-label {
+      font-size: 15px;
+      opacity: 0.87;
+      margin-top: 6px;
+      color: #42538b;
+      font-weight: 500;
+    }
+    .exam-date-input {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .exam-date-input input {
+      background: rgba(255,255,255,0.18);
+      border: 1.5px solid rgba(80,80,200,0.15);
+      border-radius: 10px;
+      padding: 9px 13px;
+      font-size: 15px;
+      color: #35407a;
+      font-family: 'DM Mono', monospace;
+      flex: 1;
+      outline: none;
+      box-shadow: none;
+      transition: border .18s;
+    }
+    .exam-date-input input:focus {
+      border-color: var(--accent2);
+    }
+    .exam-date-input input::-webkit-calendar-picker-indicator { filter: invert(0.82); opacity: 0.7; }
+    @media (max-width:600px){
+      .exam-setup{padding: 18px;}
+      .countdown-days{font-size:2.2em;}
+      .exam-name{font-size:13px;}
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 420px) {
+      .stats-row {grid-template-columns: 1fr 1fr;}
+      .stat-card:last-child{grid-column:1/-1;}
+    }
+    .stat-card {
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 11px;
+      text-align: center;
+      box-shadow: 0 2px 6px 0 rgba(90,120,180,0.07);
+    }
+    .stat-num {
+      font-size: 1.6em;
+      font-weight: 750;
+      font-family: 'DM Mono', monospace;
+      line-height: 1.08;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--text2);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+    .today-subjects { display: flex; flex-direction: column; gap: 11px; margin-top: 5px; }
+    .subject-row {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      background: var(--bg3);
+      border-radius: 10px;
+      padding: 8px 10px;
+      box-shadow: 0 1px 5px 0 rgba(150,170,230,0.03);
+    }
+    .subject-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .subject-name { font-size: 15px; flex: 1; font-weight: 500; }
+    .subject-time {
+      font-size: 13px;
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+    }
+    .subject-check {
+      width: 25px; height: 25px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      background: white;
+      font-size:18px;
+      color: var(--accent3);
+    }
+    .subject-check.done {
+      background: var(--accent3);
+      border-color: var(--accent3);
+      color: #fff;
+    }
+    .streak-hero {
+      background: linear-gradient(92deg,#fff7e6 0%,var(--bg2) 90%);
+      border: 1.5px solid var(--border);
+      border-radius: 21px;
+      padding: 30px 16px;
+      text-align: center;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 12px 0 rgba(170,180,210,0.07);
+    }
+    .streak-fire { font-size: 46px; margin-bottom: 7px;}
+    .streak-num {
+      font-size: 2.8em;
+      font-weight: 800;
+      font-family: 'DM Mono', monospace;
+      background: linear-gradient(90deg, var(--accent2), #ffd166 60%, #ffcba4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.15;
+    }
+    .streak-label { font-size: 15px; color: var(--accent2); margin-top: 7px; font-weight:600;}
+    .mini-cal {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-top: 5px;
+    }
+    .cal-day {
+      aspect-ratio: 1/1;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-family: 'DM Mono', monospace;
+      background: var(--bg3);
+      color: var(--text2);
+      transition: all .13s;
+    }
+    .cal-day.checked { background: var(--accent); color: #fff; font-weight:600; }
+    .cal-day.today { border: 2px solid var(--accent2); color: var(--text); }
+    .cal-day.header { background: none; color: var(--text3); font-size: 11px; font-weight:600; }
+    .checkin-form { display: flex; flex-direction: column; gap: 14px;}
+    .form-label { font-size: 14px; color: var(--text2); margin-bottom: 7px; font-weight: 600; }
+    .time-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px;}
+    .input-wrap {
+      background: var(--bg3);
+      border: 1.2px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .input-wrap input, .input-wrap select {
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      width: 100%;
+    }
+    .input-wrap select option { background: var(--bg3); }
+    textarea.diary-input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1.2px solid var(--border);
+      border-radius: 9px;
+      padding: 13px;
+      font-size: 15px;
+      color: var(--text);
+      font-family: 'Noto Sans SC', sans-serif;
+      resize: none;
+      outline: none;
+      line-height: 1.8;
+      min-height: 80px;
+    }
+    textarea.diary-input::placeholder { color: var(--text3); }
+    .btn-primary {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(89deg,var(--accent),#67b4fd 100%);
+      border: none;
+      border-radius: 13px;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      letter-spacing: 0.05em;
+      box-shadow: 0 2px 12px #4f90ee13;
+    }
+    .btn-primary:hover { opacity: 0.97; transform: translateY(-1.5px);}
+    .btn-primary:active { opacity: 0.93; }
+    .wrong-filters {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 15px;
+      overflow-x: auto;
+      padding-bottom: 3px;
+      scrollbar-width: none;
+    }
+    .filter-chip {
+      padding: 7px 16px;
+      border-radius: 22px;
+      border: 1.7px solid var(--border);
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      color: var(--text2);
+      background: #f6f9ff;
+      transition: all 0.16s;
+      font-family: inherit;
+      font-weight: 500;
+    }
+    .filter-chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+      box-shadow: 0 2px 8px #6a84fa11;
+    }
+    .wrong-item {
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 17px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .wrong-item:hover { border-color: rgba(124,106,247,0.3); }
+    .wrong-item-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .wrong-tag {
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .wrong-date {
+      font-size: 11px;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+      margin-left: auto;
+    }
+    .wrong-q {
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .wrong-analysis {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.6;
+      padding: 10px 12px;
+      background: var(--bg3);
+      border-radius: 8px;
+      border-left: 2px solid var(--accent);
+    }
+    .wrong-mastered {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text3);
+      cursor: pointer;
+    }
+    .wrong-mastered input { accent-color: var(--accent3); }
+    .add-wrong-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--bg2);
+      border: 1.5px dashed var(--border);
+      border-radius: 14px;
+      font-size: 14px;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Noto Sans SC', sans-serif;
+      margin-bottom: 10px;
+    }
+    .add-wrong-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg2);
+      border-radius: 20px 20px 0 0;
+      padding: 24px 20px 40px;
+      width: 100%;
+      animation: slideUp 0.3s ease;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .modal-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-close {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text2);
+      font-size: 16px;
+    }
+    .form-row { margin-bottom: 14px; }
+    .subject-select {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .subject-btn {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text2);
+      font-size: 13px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      font-family: 'Noto Sans SC', sans-serif;
+    }
+    .subject-btn.selected {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(124,106,247,0.1);
+    }
+    .progress-section { margin-bottom: 14px; }
+    .progress-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .progress-subject { font-size: 13px; width: 60px; flex-shrink: 0; }
+    .progress-bar-wrap {
+      flex: 1;
+      height: 6px;
+      background: var(--bg3);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+    .progress-pct {
+      font-size: 12px;
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+      width: 32px;
+      text-align: right;
+    }
+    .heatmap {
+      display: grid;
+      grid-template-columns: repeat(15, 1fr);
+      gap: 3px;
+    }
+    .heat-cell {
+      aspect-ratio: 1;
+      border-radius: 3px;
+      background: var(--bg3);
+    }
+    .heat-cell.l1 { background: rgba(124,106,247,0.25); }
+    .heat-cell.l2 { background: rgba(124,106,247,0.5); }
+    .heat-cell.l3 { background: rgba(124,106,247,0.75); }
+    .heat-cell.l4 { background: var(--accent); }
+    .week-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 80px;
+      margin-top: 8px;
+    }
+    .week-bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .week-bar {
+      width: 100%;
+      background: var(--accent);
+      border-radius: 4px 4px 0 0;
+      transition: height 0.5s ease;
+      opacity: 0.8;
+      min-height: 4px;
+    }
+    .week-label {
+      font-size: 10px;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+    }
+    .week-val {
+      font-size: 10px;
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+    }
+    .toast {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--accent3);
+      color: #0f1a14;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 300;
+      opacity: 0;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .diary-entry {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .diary-entry:last-child { border-bottom: none; }
+    .diary-entry-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .diary-entry-date {
+      font-size: 11px;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+    }
+    .diary-entry-hours {
+      font-size: 11px;
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+    }
+    .diary-entry-text {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text3);
+      font-size: 14px;
+      line-height: 2;
+    }
+  </style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- 首页 -->
+<div class="page active" id="page-home">
+  <div class="page-header">
+    <div>
+      <div class="page-title">你好 👋</div>
+      <div class="page-sub" id="today-date">今天是备考的第 1 天</div>
+    </div>
+  </div>
+  <div class="exam-setup">
+    <div class="exam-name">省考倒计时</div>
+    <div class="countdown-days" id="countdown-num">--</div>
+    <div class="countdown-label">距离考试还有 <span id="countdown-unit">天</span></div>
+    <div class="exam-date-input">
+      <input type="date" id="exam-date-input" placeholder="设置考试日期">
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="stat-streak" style="color:var(--accent2)">0</div><div class="stat-label">连续打卡</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-hours" style="color:var(--accent)">0</div><div class="stat-label">累计学时</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-wrong" style="color:var(--red)">0</div><div class="stat-label">错题数</div></div>
+  </div>
+  <div class="card">
+    <div class="card-label">今日计划</div>
+    <div class="today-subjects">
+      <div class="subject-row"><div class="subject-dot" style="background:var(--accent)"></div><div class="subject-name">行测 · 言语理解</div><div class="subject-time">60 min</div><button class="subject-check" id="check-1" onclick="toggleCheck(1)"></button></div>
+      <div class="subject-row"><div class="subject-dot" style="background:var(--accent2)"></div><div class="subject-name">行测 · 判断推理</div><div class="subject-time">60 min</div><button class="subject-check" id="check-2" onclick="toggleCheck(2)"></button></div>
+      <div class="subject-row"><div class="subject-dot" style="background:var(--accent3)"></div><div class="subject-name">申论 · 阅读理解</div><div class="subject-time">90 min</div><button class="subject-check" id="check-3" onclick="toggleCheck(3)"></button></div>
+      <div class="subject-row"><div class="subject-dot" style="background:var(--yellow)"></div><div class="subject-name">行测 · 数量关系</div><div class="subject-time">45 min</div><button class="subject-check" id="check-4" onclick="toggleCheck(4)"></button></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">最近动态</div>
+    <div id="home-diary-preview"><div class="empty-state">还没有备考日记<br>去打卡页记录今天吧 ✏️</div></div>
+  </div>
+</div>
+
+<!-- 打卡页 -->
+<div class="page" id="page-checkin">
+  <div class="page-header"><div><div class="page-title">每日打卡</div><div class="page-sub">坚持是最好的备考方式</div></div></div>
+  <div class="streak-hero"><div class="streak-fire">🔥</div><div class="streak-num" id="streak-display">0</div><div class="streak-label">天连续打卡</div></div>
+  <div class="card"><div class="card-label">本月打卡</div><div class="mini-cal" id="mini-cal"></div></div>
+  <div class="card">
+    <div class="card-label">今天的记录</div>
+    <div class="checkin-form">
+      <div><div class="form-label">今天学了多少小时？</div><div class="time-inputs"><div class="input-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" style="width:16px;height:16px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><input type="number" id="hours-input" placeholder="0" min="0" max="24" step="0.5"><span style="font-size:12px;color:var(--text3)">小时</span></div><div class="input-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" style="width:16px;height:16px;flex-shrink:0"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><input type="number" id="wrong-count-input" placeholder="0" min="0"><span style="font-size:12px;color:var(--text3)">道错题</span></div></div></div>
+      <div><div class="form-label">今天的心情？</div><div style="display:flex;gap:10px"><button class="subject-btn" onclick="selectMood(this,'😤')">😤 崩溃</button><button class="subject-btn" onclick="selectMood(this,'😐')">😐 一般</button><button class="subject-btn" onclick="selectMood(this,'😊')">😊 不错</button><button class="subject-btn" onclick="selectMood(this,'🔥')">🔥 超爽</button></div></div>
+      <div><div class="form-label">备考日记（选填）</div><textarea class="diary-input" id="diary-input" placeholder="今天做了什么题？哪里卡住了？还是只想吐槽一下... 都可以写"></textarea></div>
+      <button class="btn-primary" onclick="submitCheckin()">✓ 完成今日打卡</button>
+    </div>
+  </div>
+  <div class="card"><div class="card-label">备考日记</div><div id="diary-list"><div class="empty-state">还没有日记<br>打卡后自动记录 📝</div></div></div>
+</div>
+
+<!-- 错题本 -->
+<div class="page" id="page-wrong">
+  <div class="page-header"><div><div class="page-title">错题本</div><div class="page-sub" id="wrong-count-label">共 0 道错题</div></div></div>
+  <div class="wrong-filters">
+    <button class="filter-chip active" onclick="filterWrong('全部', this)">全部</button>
+    <button class="filter-chip" onclick="filterWrong('言语理解', this)">言语理解</button>
+    <button class="filter-chip" onclick="filterWrong('判断推理', this)">判断推理</button>
+    <button class="filter-chip" onclick="filterWrong('数量关系', this)">数量关系</button>
+    <button class="filter-chip" onclick="filterWrong('资料分析', this)">资料分析</button>
+    <button class="filter-chip" onclick="filterWrong('申论', this)">申论</button>
+  </div>
+  <button class="add-wrong-btn" onclick="openWrongModal()">+ 添加错题</button>
+  <div id="wrong-list"></div>
+</div>
+
+<!-- 数据页 -->
+<div class="page" id="page-stats">
+  <div class="page-header"><div><div class="page-title">备考数据</div><div class="page-sub">你的努力都有迹可循</div></div></div>
+  <div class="card"><div class="card-label">近7天学习时长（小时）</div><div class="week-chart" id="week-chart"></div><div style="display:flex;gap:8px;margin-top:8px" id="week-labels"></div></div>
+  <div class="card"><div class="card-label">错题分布</div><div class="progress-section" id="subject-progress"></div></div>
+  <div class="card"><div class="card-label">打卡热力图（近90天）</div><div class="heatmap" id="heatmap"></div></div>
+  <div class="card">
+    <div class="card-label">备考总览</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">累计学习</div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--accent)" id="total-hours-display">0h</div></div>
+      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">打卡天数</div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--accent2)" id="total-days-display">0天</div></div>
+      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">错题总数</div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--red)" id="total-wrong-display">0道</div></div>
+      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">已掌握</div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--accent3)" id="mastered-display">0道</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 底部导航 -->
+<nav class="nav">
+  <button class="nav-item active" onclick="showPage('home', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>首页</button>
+  <button class="nav-item" onclick="showPage('checkin', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/></svg>打卡</button>
+  <button class="nav-item" onclick="showPage('wrong', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>错题</button>
+  <button class="nav-item" onclick="showPage('stats', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>数据</button>
+</nav>
+
+<!-- 添加错题弹窗 -->
+<div class="modal-overlay" id="wrong-modal" onclick="closeWrongModal(event)">
+  <div class="modal">
+    <div class="modal-title">添加错题<button class="modal-close" onclick="closeWrongModal()">✕</button></div>
+    <div class="form-row"><div class="form-label">科目</div><div class="subject-select"><button class="subject-btn" onclick="selectSubject(this,'言语理解')">言语理解</button><button class="subject-btn" onclick="selectSubject(this,'判断推理')">判断推理</button><button class="subject-btn" onclick="selectSubject(this,'数量关系')">数量关系</button><button class="subject-btn" onclick="selectSubject(this,'资料分析')">资料分析</button><button class="subject-btn" onclick="selectSubject(this,'常识判断')">常识判断</button><button class="subject-btn" onclick="selectSubject(this,'申论')">申论</button></div></div>
+    <div class="form-row"><div class="form-label">题目内容（简要记录）</div><textarea class="diary-input" id="wrong-q-input" placeholder="把题目或考点简单记一下..."></textarea></div>
+    <div class="form-row"><div class="form-label">错误原因 / 知识点</div><textarea class="diary-input" id="wrong-analysis-input" placeholder="为什么错了？正确思路是什么？" style="min-height:70px"></textarea></div>
+    <button class="btn-primary" onclick="saveWrong()">保存错题</button>
+  </div>
+</div>
+
+<script>
+// 数据存储
+let state = JSON.parse(localStorage.getItem('beikao_state') || 'null') || {
+  examDate: '',
+  checkins: {},
+  wrongs: [],
+  todayChecks: {},
+};
+let selectedMood = '';
+let selectedSubject = '';
+let currentWrongFilter = '全部';
+
+function save() { localStorage.setItem('beikao_state', JSON.stringify(state)); }
+function today() { return new Date().toISOString().slice(0, 10); }
+function formatDate(d) { const date = new Date(d); return `${date.getMonth()+1}月${date.getDate()}日`; }
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+
+// 页面切换
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'stats') renderStats();
+  if (id === 'wrong') renderWrongList();
+  if (id === 'checkin') renderCalendar();
+}
+
+// 首页
+function initHome() {
+  const d = new Date();
+  document.getElementById('today-date').textContent = `${d.getMonth()+1}月${d.getDate()}日 · ${['日','一','二','三','四','五','六'][d.getDay()]}`;
+  const examInput = document.getElementById('exam-date-input');
+  if (state.examDate) examInput.value = state.examDate;
+  updateCountdown();
+  examInput.addEventListener('change', e => { state.examDate = e.target.value; save(); updateCountdown(); });
+  updateHomeStats();
+  const todayChecks = state.todayChecks || {};
+  [1,2,3,4].forEach(i => { if (todayChecks[i]) { document.getElementById('check-'+i).classList.add('done'); document.getElementById('check-'+i).innerHTML = '✓'; } });
+  renderHomeDiaryPreview();
+}
+function updateCountdown() {
+  if (!state.examDate) { document.getElementById('countdown-num').textContent = '--'; return; }
+  const diff = Math.ceil((new Date(state.examDate) - new Date()) / 86400000);
+  document.getElementById('countdown-num').textContent = diff > 0 ? diff : 0;
+  document.getElementById('countdown-unit').textContent = diff > 0 ? '天' : '天（已到期）';
+}
+function updateHomeStats() {
+  const checkins = state.checkins;
+  let streak = 0;
+  const t = today();
+  let cur = new Date(t);
+  while (true) {
+    const key = cur.toISOString().slice(0,10);
+    if (checkins[key]) { streak++; cur.setDate(cur.getDate()-1); } else break;
+  }
+  let totalH = 0;
+  Object.values(checkins).forEach(c => totalH += (parseFloat(c.hours) || 0));
+  document.getElementById('stat-streak').textContent = streak;
+  document.getElementById('stat-hours').textContent = totalH.toFixed(1);
+  document.getElementById('stat-wrong').textContent = state.wrongs.length;
+  document.getElementById('streak-display').textContent = streak;
+}
+function renderHomeDiaryPreview() {
+  const entries = Object.entries(state.checkins).filter(([,v]) => v.diary).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,2);
+  const el = document.getElementById('home-diary-preview');
+  if (!entries.length) { el.innerHTML = '<div class="empty-state">还没有备考日记<br>去打卡页记录今天吧 ✏️</div>'; return; }
+  el.innerHTML = entries.map(([date, c]) => `<div class="diary-entry"><div class="diary-entry-top"><div class="diary-entry-date">${formatDate(date)}</div><div class="diary-entry-hours">${c.hours||0}h ${c.mood||''}</div></div><div class="diary-entry-text">${c.diary}</div></div>`).join('');
+}
+function toggleCheck(i) {
+  if (!state.todayChecks) state.todayChecks = {};
+  state.todayChecks[i] = !state.todayChecks[i];
+  save();
+  const btn = document.getElementById('check-'+i);
+  btn.classList.toggle('done', state.todayChecks[i]);
+  btn.innerHTML = state.todayChecks[i] ? '✓' : '';
+  if (state.todayChecks[i]) showToast('完成一个计划 💪');
+}
+
+// 打卡页
+function renderCalendar() {
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const todayNum = now.getDate();
+  const headers = ['日','一','二','三','四','五','六'];
+  let html = headers.map(h => `<div class="cal-day header">${h}</div>`).join('');
+  for (let i=0; i<firstDay; i++) html += '<div class="cal-day"></div>';
+  for (let d=1; d<=daysInMonth; d++) {
+    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = d===todayNum;
+    const checked = !!state.checkins[key];
+    let cls = 'cal-day';
+    if (checked) cls += ' checked';
+    else if (isToday) cls += ' today';
+    html += `<div class="${cls}">${d}</div>`;
+  }
+  document.getElementById('mini-cal').innerHTML = html;
+  renderDiaryList();
+  updateHomeStats();
+}
+function renderDiaryList() {
+  const entries = Object.entries(state.checkins).sort((a,b)=>b[0].localeCompare(a[0]));
+  const el = document.getElementById('diary-list');
+  if (!entries.length) { el.innerHTML = '<div class="empty-state">还没有日记<br>打卡后自动记录 📝</div>'; return; }
+  el.innerHTML = entries.map(([date, c]) => `<div class="diary-entry"><div class="diary-entry-top"><div class="diary-entry-date">${formatDate(date)} ${c.mood||''}</div><div class="diary-entry-hours">${c.hours||0}h · ${c.wrongCount||0}道错题</div></div><div class="diary-entry-text">${c.diary || '<span style="color:var(--text3)">（无日记）</span>'}</div></div>`).join('');
+}
+function selectMood(btn, mood) { document.querySelectorAll('#page-checkin .subject-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedMood = mood; }
+function submitCheckin() {
+  const hours = parseFloat(document.getElementById('hours-input').value) || 0;
+  const wrongCount = parseInt(document.getElementById('wrong-count-input').value) || 0;
+  const diary = document.getElementById('diary-input').value.trim();
+  const key = today();
+  state.checkins[key] = { hours, wrongCount, mood: selectedMood, diary, ts: Date.now() };
+  save();
+  showToast('打卡成功 🎉 加油！');
+  document.getElementById('hours-input').value = '';
+  document.getElementById('wrong-count-input').value = '';
+  document.getElementById('diary-input').value = '';
+  selectedMood = '';
+  document.querySelectorAll('#page-checkin .subject-btn').forEach(b=>b.classList.remove('selected'));
+  renderCalendar();
+  renderHomeDiaryPreview();
+  updateHomeStats();
+}
+
+// 错题本
+const subjectColors = { '言语理解':'#7c6af7','判断推理':'#f7836a','数量关系':'#f7d06a','资料分析':'#5dd8a4','常识判断':'#6af0f7','申论':'#f76a9f' };
+function selectSubject(btn, sub) { document.querySelectorAll('.subject-select .subject-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedSubject = sub; }
+function openWrongModal() { document.getElementById('wrong-modal').classList.add('open'); selectedSubject = ''; }
+function closeWrongModal(e) { if (!e || e.target===document.getElementById('wrong-modal')) { document.getElementById('wrong-modal').classList.remove('open'); document.getElementById('wrong-q-input').value = ''; document.getElementById('wrong-analysis-input').value = ''; document.querySelectorAll('.subject-select .subject-btn').forEach(b=>b.classList.remove('selected')); } }
+function saveWrong() {
+  const q = document.getElementById('wrong-q-input').value.trim();
+  const analysis = document.getElementById('wrong-analysis-input').value.trim();
+  if (!selectedSubject) { showToast('请选择科目'); return; }
+  if (!q) { showToast('请填写题目内容'); return; }
+  state.wrongs.push({ id: Date.now(), subject: selectedSubject, question: q, analysis, date: today(), mastered: false });
+  save();
+  closeWrongModal();
+  renderWrongList();
+  updateHomeStats();
+  showToast('错题已记录 📌');
+}
+function filterWrong(f, btn) { currentWrongFilter = f; document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderWrongList(); }
+function renderWrongList() {
+  let wrongs = state.wrongs;
+  if (currentWrongFilter !== '全部') wrongs = wrongs.filter(w => w.subject === currentWrongFilter);
+  wrongs = wrongs.slice().reverse();
+  document.getElementById('wrong-count-label').textContent = `共 ${state.wrongs.length} 道错题`;
+  const el = document.getElementById('wrong-list');
+  if (!wrongs.length) { el.innerHTML = '<div class="empty-state">还没有错题<br>点击上方添加 💪</div>'; return; }
+  el.innerHTML = wrongs.map(w => `<div class="wrong-item"><div class="wrong-item-top"><div class="wrong-tag" style="background:${subjectColors[w.subject]||'#7c6af7'}22;color:${subjectColors[w.subject]||'#7c6af7'}">${w.subject}</div><div class="wrong-date">${formatDate(w.date)}</div></div><div class="wrong-q">${w.question}</div>${w.analysis ? `<div class="wrong-analysis">💡 ${w.analysis}</div>` : ''}<label class="wrong-mastered"><input type="checkbox" ${w.mastered?'checked':''} onchange="toggleMastered(${w.id})"> 已掌握，不再提醒</label></div>`).join('');
+}
+function toggleMastered(id) { const w = state.wrongs.find(x=>x.id===id); if(w){ w.mastered=!w.mastered; save(); } }
+
+// 数据页
+function renderStats() {
+  const checkins = state.checkins;
+  const days = ['一','二','三','四','五','六','日'];
+  const weekData = [];
+  for (let i=6; i>=0; i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const key = d.toISOString().slice(0,10);
+    const h = checkins[key] ? (parseFloat(checkins[key].hours)||0) : 0;
+    weekData.push({ label: days[d.getDay()===0?6:d.getDay()-1], hours: h, key });
+  }
+  const maxH = Math.max(...weekData.map(d=>d.hours),1);
+  const chartEl = document.getElementById('week-chart');
+  chartEl.innerHTML = weekData.map(d => `<div class="week-bar-wrap"><div style="font-size:10px;color:var(--text2);font-family:'DM Mono',monospace;margin-bottom:4px">${d.hours||''}</div><div class="week-bar" style="height:${Math.max((d.hours/maxH)*60,d.hours?4:0)}px;opacity:${d.hours?0.85:0.2}"></div><div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace">${d.label}</div></div>`).join('');
+  const subjectCounts = {};
+  state.wrongs.forEach(w => { subjectCounts[w.subject] = (subjectCounts[w.subject]||0)+1; });
+  const total = state.wrongs.length || 1;
+  const progressEl = document.getElementById('subject-progress');
+  if (Object.keys(subjectCounts).length===0) progressEl.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:8px 0">还没有错题数据</div>';
+  else progressEl.innerHTML = Object.entries(subjectCounts).sort((a,b)=>b[1]-a[1]).map(([sub,cnt]) => `<div class="progress-item"><div class="progress-subject" style="color:${subjectColors[sub]||'#7c6af7'};font-size:12px">${sub}</div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${(cnt/total*100).toFixed(0)}%;background:${subjectColors[sub]||'#7c6af7'}"></div></div><div class="progress-pct">${cnt}道</div></div>`).join('');
+  const heatEl = document.getElementById('heatmap');
+  let heatHtml = '';
+  for (let i=89; i>=0; i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const key = d.toISOString().slice(0,10);
+    const h = checkins[key] ? (parseFloat(checkins[key].hours)||0) : 0;
+    let lvl = 0;
+    if (h>0 && h<=2) lvl=1; else if (h>2 && h<=4) lvl=2; else if (h>4 && h<=6) lvl=3; else if (h>6) lvl=4;
+    heatHtml += `<div class="heat-cell ${lvl?'l'+lvl:''}" title="${key}: ${h}h"></div>`;
+  }
+  heatEl.innerHTML = heatHtml;
+  let totalH = 0;
+  Object.values(checkins).forEach(c => totalH += parseFloat(c.hours)||0);
+  const totalDays = Object.keys(checkins).length;
+  const mastered = state.wrongs.filter(w=>w.mastered).length;
+  document.getElementById('total-hours-display').textContent = totalH.toFixed(1)+'h';
+  document.getElementById('total-days-display').textContent = totalDays+'天';
+  document.getElementById('total-wrong-display').textContent = state.wrongs.length+'道';
+  document.getElementById('mastered-display').textContent = mastered+'道';
+}
+
+// 注册 Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log(err)); });
+}
+
+// 启动
+initHome();
+renderCalendar();
+renderWrongList();
+</script>
+</body>
+</html>

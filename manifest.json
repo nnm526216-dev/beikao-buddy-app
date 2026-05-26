@@ -1,0 +1,22 @@
+{
+    "name": "备考Buddy",
+    "short_name": "备考Buddy",
+    "description": "高效备考助手，支持离线与安装体验。",
+    "lang": "zh-CN",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4f50ff",
+    "icons": [
+      {
+        "src": "icons/icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "icons/icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
