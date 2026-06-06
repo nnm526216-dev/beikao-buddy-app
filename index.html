@@ -3,976 +3,1840 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>备考Buddy</title>
-  <!-- PWA 必需 -->
-  <meta name="theme-color" content="#4f50ff">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="icon" sizes="192x192" href="/icons/icon-192.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png">
-  <meta name="msapplication-TileImage" content="/icons/icon-192.png">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- 字体 -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <title>备考Buddy · 奶油抹茶日记</title>
+  <meta name="theme-color" content="#A8D5A2">
+  <!-- Netlify Identity Widget -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
   <style>
-    /* 这里原本的样式全部保留，因为代码太长，此处省略，您原来的样式不需要改动 */
-    /* 为了节省篇幅，我将在后面直接附上完整样式 */
     :root {
-      --bg: #f7f8fa;
-      --bg2: #ffffff;
-      --bg3: #f1f3f6;
-      --border: rgba(80,75,183,0.08);
-      --accent: #4f50ff;
-      --accent2: #ffa75b;
-      --accent3: #32cfa5;
-      --text: #23233a;
-      --text2: #747492;
-      --text3: #b4b8cd;
-      --red: #ff6d6b;
-      --yellow: #ffe880;
-      --shadow-main: 0 2px 16px 0 rgba(80,80,200,0.06);
+      --bg-cream: #f9fff0;
+      --card-white: #ffffff;
+      --green-main: #A8D5A2;
+      --green-light: #C8E6C2;
+      --pink-soft: #FED5D6;
+      --text-dark: #3E3A39;
+      --text-gray: #9B928C;
+      --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.04);
+      --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.03);
+      --radius-large: 28px;
+      --radius-card: 20px;
+      --radius-small: 16px;
+      --radius-btn: 40px;
+      --border-light: rgba(168, 213, 162, 0.25);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter','Noto Sans SC', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Quicksand', 'Noto Sans SC', sans-serif;
+      background: var(--bg-cream);
+      color: var(--text-dark);
       min-height: 100vh;
       overflow-x: hidden;
     }
     @media (max-width: 480px) {
-      html { font-size: 15px; }
-      .page-header { padding-top: 32px !important;}
-      .stats-row { gap: 7px !important;}
-      .exam-setup { padding: 18px !important;}
-      .card { padding: 14px !important;}
+      .page-header { padding-top: 28px !important; }
+      .stats-row { gap: 10px !important; }
+      .exam-setup { padding: 20px !important; }
+      .card { padding: 18px !important; }
     }
-    @media (max-width: 350px) {
-      .card { padding: 7px !important;}
+
+    /* ===== 顶部状态栏 ===== */
+    .top-bar {
+      position: sticky; top: 0; z-index: 99;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      padding: 8px 18px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(168,213,162,0.15);
+      border-radius: 0 0 16px 16px;
     }
+    .top-bar-login {
+      background: var(--green-main); color: white;
+      padding: 6px 16px; border-radius: 40px;
+      font-size: 12px; cursor: pointer; border: none;
+      font-family: inherit; font-weight: 500;
+    }
+
+    /* ===== 导航栏 ===== */
     .nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      background: var(--bg2);
-      border-top: 1.5px solid var(--border);
-      display: flex;
-      z-index: 100;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      display: flex; z-index: 100;
       padding-bottom: env(safe-area-inset-bottom);
-      box-shadow: 0 0 16px 0 rgba(110,120,168,0.07);
-      height: 58px;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
+      height: 62px;
+      border-radius: 24px 24px 0 0;
     }
     .nav-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      padding: 9px 0;
-      cursor: pointer;
-      transition: all 0.16s;
-      color: var(--text3);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      border: none;
-      background: none;
-      font-family: inherit;
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 10px 0 8px; cursor: pointer; transition: all 0.2s;
+      color: var(--text-gray); font-size: 11px; font-weight: 500;
+      border: none; background: none; font-family: inherit;
     }
-    .nav-item.active { color: var(--accent);}
-    .nav-item svg { width: 22px; height: 22px; stroke-width: 1.6; }
-    @media (max-width:500px){.nav-item{font-size:10px;}}
-    .page { display: none; padding: 0 4vw 85px; animation: up 0.3s cubic-bezier(.35,.82,.48,1); max-width: 700px; margin: 0 auto;}
+    .nav-item.active { color: var(--green-main); transform: translateY(-2px); }
+    .nav-item svg {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  transition: all 0.2s;
+}
+.nav-item.active svg { stroke: var(--green-main); fill: none; }
+
+    /* ===== 页面通用 ===== */
+    .page { display: none; padding: 0 5vw 85px; animation: fadeUp 0.35s; max-width: 600px; margin: 0 auto; }
     .page.active { display: block; }
-    @keyframes up {
-      from { opacity: 0; transform: translateY(24px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
-    .page-header {
-      padding: 48px 0 20px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .page-header { padding: 42px 0 16px; display: flex; align-items: flex-end; justify-content: space-between; }
     .page-title {
-      font-size: 1.8em;
-      font-weight: 700;
-      letter-spacing: -0.6px;
-      font-family: 'Inter','Noto Sans SC', sans-serif;
-      color: var(--accent);
-    }
-    .page-sub {
-      font-size: 13px;
-      color: var(--text2);
-      margin-top: 3px;
-      letter-spacing: 0.01em;
-    }
-    .card {
-      background: var(--bg2);
-      border: 1.5px solid var(--border);
-      border-radius: 18px;
-      padding: 22px;
-      margin-bottom: 14px;
-      box-shadow: var(--shadow-main);
-    }
-    .card-label {
-      font-size: 12px;
-      color: var(--text3);
-      letter-spacing: 1.6px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-      font-family: 'DM Mono', monospace;
-      font-weight: 600;
-    }
-    .exam-setup {
-      background: linear-gradient(120deg, #97e6fc 0%, var(--accent) 100%);
-      border-radius: 22px;
-      padding: 30px;
-      margin-bottom: 15px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 24px 0 rgba(0,58,204,0.10);
-      color: #20306e;
-    }
-    .exam-setup::before {
-      content: '';
-      position: absolute;
-      top: -28px; right: -24px;
-      width: 120px; height: 120px;
-      background: rgba(255,255,255,0.14);
-      border-radius: 56%;
-      filter: blur(2px);
-    }
-    .exam-name {
-      font-size: 15px;
-      opacity: 0.90;
-      margin-bottom: 8px;
-      letter-spacing: .03em;
-      font-weight: 500;
-      color: #404090;
-    }
-    .countdown-days {
-      font-size: 3.3em;
-      font-weight: 800;
-      font-family: 'DM Mono', monospace;
-      line-height: 1.1;
-      letter-spacing: -2.5px;
-      color: var(--accent);
-      text-shadow: 0 4px 18px #3e8fff44;
-    }
-    .countdown-label {
-      font-size: 15px;
-      opacity: 0.87;
-      margin-top: 6px;
-      color: #42538b;
-      font-weight: 500;
-    }
-    .exam-date-input {
-      margin-top: 18px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .exam-date-input input {
-      background: rgba(255,255,255,0.18);
-      border: 1.5px solid rgba(80,80,200,0.15);
-      border-radius: 10px;
-      padding: 9px 13px;
-      font-size: 15px;
-      color: #35407a;
-      font-family: 'DM Mono', monospace;
-      flex: 1;
-      outline: none;
-      box-shadow: none;
-      transition: border .18s;
-    }
-    .exam-date-input input:focus {
-      border-color: var(--accent2);
-    }
-    .exam-date-input input::-webkit-calendar-picker-indicator { filter: invert(0.82); opacity: 0.7; }
-    @media (max-width:600px){
-      .exam-setup{padding: 18px;}
-      .countdown-days{font-size:2.2em;}
-      .exam-name{font-size:13px;}
-    }
-    .stats-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-    @media (max-width: 420px) {
-      .stats-row {grid-template-columns: 1fr 1fr;}
-      .stat-card:last-child{grid-column:1/-1;}
-    }
-    .stat-card {
-      background: var(--bg2);
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 11px;
-      text-align: center;
-      box-shadow: 0 2px 6px 0 rgba(90,120,180,0.07);
-    }
-    .stat-num {
-      font-size: 1.6em;
-      font-weight: 750;
-      font-family: 'DM Mono', monospace;
-      line-height: 1.08;
-      margin-bottom: 4px;
-    }
-    .stat-label {
-      font-size: 11px;
-      color: var(--text2);
-      margin-top: 2px;
-      font-weight: 500;
-    }
-    .today-subjects { display: flex; flex-direction: column; gap: 11px; margin-top: 5px; }
-    .subject-row {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      background: var(--bg3);
-      border-radius: 10px;
-      padding: 8px 10px;
-      box-shadow: 0 1px 5px 0 rgba(150,170,230,0.03);
-    }
-    .subject-dot {
-      width: 9px; height: 9px;
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 1.9rem;
+  font-weight: 400;          /* 该字体本身较粗，不需要 700 */
+  background: linear-gradient(135deg, var(--green-main), #8fb35c);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+    .page-sub { font-size: 13px; color: var(--text-gray); margin-top: 6px; font-weight: 450; }
+    .card { background: var(--card-white); border-radius: var(--radius-card); box-shadow: var(--shadow-card); padding: 20px; margin-bottom: 18px; border: 1px solid var(--border-light); }
+    .card-label { font-size: 12px; color: var(--text-gray); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; justify-content: center; }
+    .card-label::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url('icons/flower.png');
+  background-size: contain;
+  margin-right: 6px;
+}
+
+   /* 倒计时卡片 */
+.exam-setup {
+  background: url('image/images/bg-exam.png') no-repeat center center / cover;
+  border-radius: var(--radius-large);
+  padding: 28px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-soft);
+  border: none;
+  text-align: center;
+}
+    .exam-name { font-size: 14px; opacity: 0.8; margin-bottom: 6px; font-weight: 500; color: #6b8c3e; }
+    .countdown-days { font-size: 3.6rem; font-weight: 800; font-family: 'DM Mono', monospace; line-height: 1.1; letter-spacing: -2px; color: var(--green-main); text-shadow: 0 2px 8px rgb(255, 255, 255); }
+    .countdown-label { font-size: 14px; opacity: 0.8; margin-top: 5px; color: #8aa75c; }
+    .exam-date-input input { background: rgba(255,255,255,0.7); border: 1px solid rgba(168,213,162,0.3); border-radius: 30px; padding: 8px 16px; font-size: 14px; color: #5c6e3a; font-family: 'DM Mono', monospace; outline: none; }
+
+    /* ===== 统计卡片行 ===== */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+    .stat-card { background: var(--card-white); border-radius: var(--radius-small); padding: 18px 6px; text-align: center; box-shadow: var(--shadow-card); border: 1px solid var(--border-light); }
+    .stat-num { font-size: 1.9rem; font-weight: 700; font-family: 'DM Mono', monospace; margin-bottom: 10px; }
+    .stat-label { font-size: 12px; color: var(--text-gray); margin-top: 4px; }
+
+    /* 圆形饼图卡片 - 带阴影 */
+    .stat-card.circle-card {
       border-radius: 50%;
-      flex-shrink: 0;
+      width: 100%; aspect-ratio: 1 / 1;
+      padding: 0; display: block; overflow: hidden;
+      background: var(--card-white);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-light);
     }
-    .subject-name { font-size: 15px; flex: 1; font-weight: 500; }
-    .subject-time {
-      font-size: 13px;
-      color: var(--text2);
-      font-family: 'DM Mono', monospace;
-    }
-    .subject-check {
-      width: 25px; height: 25px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
-      flex-shrink: 0;
-      background: white;
-      font-size:18px;
-      color: var(--accent3);
-    }
-    .subject-check.done {
-      background: var(--accent3);
-      border-color: var(--accent3);
-      color: #fff;
-    }
-    .streak-hero {
-      background: linear-gradient(92deg,#fff7e6 0%,var(--bg2) 90%);
-      border: 1.5px solid var(--border);
-      border-radius: 21px;
-      padding: 30px 16px;
-      text-align: center;
-      margin-bottom: 14px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 2px 12px 0 rgba(170,180,210,0.07);
-    }
-    .streak-fire { font-size: 46px; margin-bottom: 7px;}
+    .pie-svg { width: 100%; height: 100%; display: block; }
+
+    /* ===== 今日待办 ===== */
+    .today-subjects { display: flex; flex-direction: column; gap: 12px; }
+    .subject-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(120deg, #f2f9ec 0%, #e0f0d0 100%);
+  border-radius: 20px;
+  padding: 10px 14px;
+  flex-wrap: wrap;
+}
+    .subject-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 20px;
+  flex-shrink: 0;
+  background: var(--green-main);   /* 默认未完成绿色 */
+  transition: background 0.2s;
+}
+    .subject-name { font-size: 15px; flex: 1; font-weight: 500; min-width: 100px; }
+    .subject-time { font-size: 12px; color: var(--text-gray); font-family: 'DM Mono', monospace; }
+    .subject-check { width: 24px; height: 24px; border-radius: 30px; border: 1.5px solid var(--green-light); cursor: pointer; display: flex; align-items: center; justify-content: center; background: white; font-size: 18px; color: var(--green-main); transition: all 0.2s; }
+    .subject-check.done { background: var(--green-main); border-color: var(--green-main); color: white; box-shadow: 0 2px 8px rgba(168,213,162,0.3); }
+    .icon-btn { background: none; border: none; cursor: pointer; font-size: 16px; opacity: 0.6; transition: opacity 0.2s; padding: 4px; }
+    .icon-btn:hover { opacity: 1; }
+
+   /* 连续打卡卡片 */
+.streak-hero {
+  background: url('image/images/bg-streak.jpg') no-repeat center center / cover;
+  border-radius: var(--radius-large);
+  padding: 28px 16px;
+  text-align: center;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-soft);
+}
+    .streak-fire { font-size: 48px; margin-bottom: 5px; }
     .streak-num {
-      font-size: 2.8em;
-      font-weight: 800;
-      font-family: 'DM Mono', monospace;
-      background: linear-gradient(90deg, var(--accent2), #ffd166 60%, #ffcba4 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1.15;
+  font-size: 3rem;
+  font-weight: 800;
+  font-family: 'DM Mono', monospace;
+  background: linear-gradient(135deg, var(--green-main), #8aa75c);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 6px rgb(255, 255, 255));
+} 
+    .streak-label { font-size: 14px; font-weight: 600; color: #8aa75c; }
+
+    /* 日历 */
+    .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cal-nav button { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--green-main); padding: 4px 10px; border-radius: 8px; }
+    .cal-nav button:hover { background: rgba(168,213,162,0.15); }
+    .cal-nav-title { font-size: 15px; font-weight: 600; color: var(--text-dark); }
+    .mini-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 8px; }
+    .cal-day { aspect-ratio: 1; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-family: 'DM Mono', monospace; background: linear-gradient(120deg, #f2f9ec, #e0f0d0); color: var(--text-dark); position: relative; cursor: default; }
+    .cal-day.checked { background: var(--green-main); color: white; font-weight: 600; box-shadow: 0 2px 6px rgba(168,213,162,0.2); }
+    .cal-day.today { border: 2px solid var(--green-main); background: #e6f8d7; }
+    .cal-day.header { background: none; color: var(--text-gray); font-size: 12px; font-weight: 600; }
+    .cal-day.empty { background: none; }
+    .cal-day .mood-overlay { position: absolute; font-size: 18px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+    .cal-day.has-mood { background: var(--green-main); color: transparent; }
+    .cal-day.has-mood .mood-overlay { color: initial; }
+    .cal-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: center; }
+    .cal-action-btn { padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border-light); background: white; font-size: 12px; cursor: pointer; color: var(--text-dark); font-family: inherit; transition: all 0.2s; }
+    .cal-action-btn:hover { background: var(--green-main); color: white; border-color: var(--green-main); }
+    .cal-action-btn.danger { border-color: #ffb3b3; color: #cc4444; }
+    .cal-action-btn.danger:hover { background: #ff6b6b; color: white; }
+
+    /* 心情选择 */
+    .mood-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+    .mood-btn { border-radius: 30px; background: linear-gradient(120deg, #f2f9ec, #e0f0d0); border: 1.5px solid var(--border-light); padding: 8px 14px; cursor: pointer; color: var(--text-gray); font-size: 13px; transition: all 0.2s; font-family: inherit; }
+    .mood-btn.selected { background: var(--green-main); border-color: var(--green-main); color: white; }
+
+    /* ===== 表单 ===== */
+    .form-label { font-size: 14px; font-weight: 600; color: var(--text-dark); margin: 14px 0 8px; }
+    .time-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .input-wrap { background: linear-gradient(120deg, #f2f9ec, #e0f0d0); border: 1px solid var(--border-light); border-radius: 24px; padding: 10px 15px; display: flex; align-items: center; gap: 8px; }
+    .input-wrap input, .input-wrap select { background: none; border: none; outline: none; font-size: 16px; color: var(--text-dark); font-family: 'DM Mono', monospace; width: 100%; }
+    textarea.diary-input { width: 100%; background: linear-gradient(120deg, #f2f9ec, #e0f0d0); border: 1px solid var(--border-light); border-radius: 20px; padding: 14px; font-size: 14px; color: var(--text-gray); font-family: inherit; resize: vertical; outline: none; line-height: 1.5; min-height: 80px; }
+    .btn-primary { width: 100%; padding: 14px; background: linear-gradient(95deg, var(--green-main), #C8E6C2); border: none; border-radius: var(--radius-btn); font-size: 16px; font-weight: 600; color: white; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(168,213,162,0.25); margin-top: 14px; }
+
+    /* ===== 错题本 ===== */
+    .wrong-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+    .wrong-category-card {
+      background: var(--card-white); border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card); border: 1px solid var(--border-light);
+      padding: 24px 12px; text-align: center; cursor: pointer;
+      transition: all 0.2s; position: relative; overflow: hidden;
     }
-    .streak-label { font-size: 15px; color: var(--accent2); margin-top: 7px; font-weight:600;}
-    .mini-cal {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      margin-top: 5px;
-    }
-    .cal-day {
-      aspect-ratio: 1/1;
-      border-radius: 8px;
+    .wrong-category-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-soft); }
+    .wrong-category-card .cat-icon { font-size: 32px; margin-bottom: 8px; }
+    .wrong-category-card .cat-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+    .wrong-category-card .cat-count { font-size: 12px; color: var(--text-gray); margin-top: 4px; }
+    .add-wrong-btn { width: 100%; padding: 14px; background: var(--card-white); border: 1.5px dashed var(--green-light); border-radius: 40px; font-size: 14px; color: var(--green-main); cursor: pointer; transition: all 0.2s; margin-bottom: 16px; box-shadow: var(--shadow-card); }
+    .wrong-item { background: var(--card-white); border-radius: 24px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--border-light); box-shadow: var(--shadow-card); }
+    .wrong-tag { padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: 600; display: inline-block; }
+
+    /* ===== 数据页 ===== */
+    .chart-controls {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-family: 'DM Mono', monospace;
-      background: var(--bg3);
-      color: var(--text2);
-      transition: all .13s;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
-    .cal-day.checked { background: var(--accent); color: #fff; font-weight:600; }
-    .cal-day.today { border: 2px solid var(--accent2); color: var(--text); }
-    .cal-day.header { background: none; color: var(--text3); font-size: 11px; font-weight:600; }
-    .checkin-form { display: flex; flex-direction: column; gap: 14px;}
-    .form-label { font-size: 14px; color: var(--text2); margin-bottom: 7px; font-weight: 600; }
-    .time-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px;}
-    .input-wrap {
-      background: var(--bg3);
-      border: 1.2px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 15px;
+    .range-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .range-tab {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border-light);
+      background: white;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--text-gray);
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .range-tab.active {
+      background: var(--green-main);
+      color: white;
+      border-color: var(--green-main);
+    }
+    .month-year-nav {
       display: flex;
       align-items: center;
       gap: 8px;
+      background: var(--card-white);
+      border-radius: 30px;
+      padding: 4px 12px;
+      border: 1px solid var(--border-light);
     }
-    .input-wrap input, .input-wrap select {
+    .month-year-nav button {
       background: none;
       border: none;
-      outline: none;
-      font-size: 16px;
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      width: 100%;
-    }
-    .input-wrap select option { background: var(--bg3); }
-    textarea.diary-input {
-      width: 100%;
-      background: var(--bg3);
-      border: 1.2px solid var(--border);
-      border-radius: 9px;
-      padding: 13px;
-      font-size: 15px;
-      color: var(--text);
-      font-family: 'Noto Sans SC', sans-serif;
-      resize: none;
-      outline: none;
-      line-height: 1.8;
-      min-height: 80px;
-    }
-    textarea.diary-input::placeholder { color: var(--text3); }
-    .btn-primary {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(89deg,var(--accent),#67b4fd 100%);
-      border: none;
-      border-radius: 13px;
-      font-size: 16px;
-      font-weight: 600;
-      color: white;
       cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-      letter-spacing: 0.05em;
-      box-shadow: 0 2px 12px #4f90ee13;
-    }
-    .btn-primary:hover { opacity: 0.97; transform: translateY(-1.5px);}
-    .btn-primary:active { opacity: 0.93; }
-    .wrong-filters {
+      font-size: 16px;
+      color: var(--green-main);
       display: flex;
-      gap: 7px;
-      margin-bottom: 15px;
-      overflow-x: auto;
-      padding-bottom: 3px;
-      scrollbar-width: none;
+      align-items: center;
+      padding: 4px;
     }
-    .filter-chip {
-      padding: 7px 16px;
-      border-radius: 22px;
-      border: 1.7px solid var(--border);
+    .month-year-nav span {
       font-size: 13px;
-      cursor: pointer;
-      white-space: nowrap;
-      color: var(--text2);
-      background: #f6f9ff;
-      transition: all 0.16s;
-      font-family: inherit;
-      font-weight: 500;
-    }
-    .filter-chip.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: white;
-      box-shadow: 0 2px 8px #6a84fa11;
-    }
-    .wrong-item {
-      background: var(--bg2);
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 17px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .wrong-item:hover { border-color: rgba(124,106,247,0.3); }
-    .wrong-item-top {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .wrong-tag {
-      padding: 3px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-    .wrong-date {
-      font-size: 11px;
-      color: var(--text3);
-      font-family: 'DM Mono', monospace;
-      margin-left: auto;
-    }
-    .wrong-q {
-      font-size: 14px;
-      line-height: 1.6;
-      margin-bottom: 10px;
-      color: var(--text);
-    }
-    .wrong-analysis {
-      font-size: 12px;
-      color: var(--text2);
-      line-height: 1.6;
-      padding: 10px 12px;
-      background: var(--bg3);
-      border-radius: 8px;
-      border-left: 2px solid var(--accent);
-    }
-    .wrong-mastered {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--text3);
-      cursor: pointer;
-    }
-    .wrong-mastered input { accent-color: var(--accent3); }
-    .add-wrong-btn {
-      width: 100%;
-      padding: 14px;
-      background: var(--bg2);
-      border: 1.5px dashed var(--border);
-      border-radius: 14px;
-      font-size: 14px;
-      color: var(--text2);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'Noto Sans SC', sans-serif;
-      margin-bottom: 10px;
-    }
-    .add-wrong-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      z-index: 200;
-      display: none;
-      align-items: flex-end;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--bg2);
-      border-radius: 20px 20px 0 0;
-      padding: 24px 20px 40px;
-      width: 100%;
-      animation: slideUp 0.3s ease;
-      max-height: 85vh;
-      overflow-y: auto;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-    .modal-title {
-      font-size: 17px;
       font-weight: 600;
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .modal-close {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      background: var(--bg3);
-      border: none;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--text2);
-      font-size: 16px;
-    }
-    .form-row { margin-bottom: 14px; }
-    .subject-select {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-    .subject-btn {
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--bg3);
-      color: var(--text2);
-      font-size: 13px;
-      cursor: pointer;
+      min-width: 80px;
       text-align: center;
-      transition: all 0.2s;
-      font-family: 'Noto Sans SC', sans-serif;
     }
-    .subject-btn.selected {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: rgba(124,106,247,0.1);
-    }
-    .progress-section { margin-bottom: 14px; }
-    .progress-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .progress-subject { font-size: 13px; width: 60px; flex-shrink: 0; }
-    .progress-bar-wrap {
-      flex: 1;
-      height: 6px;
-      background: var(--bg3);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 1s ease;
-    }
-    .progress-pct {
-      font-size: 12px;
-      color: var(--text2);
-      font-family: 'DM Mono', monospace;
-      width: 32px;
-      text-align: right;
-    }
-    .heatmap {
-      display: grid;
-      grid-template-columns: repeat(15, 1fr);
-      gap: 3px;
-    }
-    .heat-cell {
-      aspect-ratio: 1;
-      border-radius: 3px;
-      background: var(--bg3);
-    }
-    .heat-cell.l1 { background: rgba(124,106,247,0.25); }
-    .heat-cell.l2 { background: rgba(124,106,247,0.5); }
-    .heat-cell.l3 { background: rgba(124,106,247,0.75); }
-    .heat-cell.l4 { background: var(--accent); }
     .week-chart {
       display: flex;
       align-items: flex-end;
       gap: 8px;
-      height: 80px;
-      margin-top: 8px;
+      height: 140px;
+      margin-top: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
     }
     .week-bar-wrap {
-      flex: 1;
+      flex: 0 0 auto;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
       height: 100%;
       justify-content: flex-end;
+      min-width: 36px;
     }
     .week-bar {
       width: 100%;
-      background: var(--accent);
-      border-radius: 4px 4px 0 0;
-      transition: height 0.5s ease;
-      opacity: 0.8;
+      background: var(--green-main);
+      border-radius: 12px 12px 6px 6px;
+      transition: height 0.3s;
       min-height: 4px;
     }
-    .week-label {
+    .week-bar-label {
       font-size: 10px;
-      color: var(--text3);
-      font-family: 'DM Mono', monospace;
-    }
-    .week-val {
-      font-size: 10px;
-      color: var(--text2);
-      font-family: 'DM Mono', monospace;
-    }
-    .toast {
-      position: fixed;
-      top: 60px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      background: var(--accent3);
-      color: #0f1a14;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 500;
-      z-index: 300;
-      opacity: 0;
-      transition: all 0.3s;
+      color: var(--text-gray);
       white-space: nowrap;
     }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-    .section-title {
-      font-size: 13px;
+    .week-bar-val {
+      font-size: 10px;
+      color: var(--text-dark);
       font-weight: 600;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
+
+    /* 饼图 */
+    .pie-chart-container { display: flex; justify-content: center; align-items: center; padding: 20px; }
+    .pie-chart-container svg { width: 200px; height: 200px; }
+
+    /* 进度条 */
+    .progress-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .progress-item .prog-label {
+  width: auto;           /* 取消固定宽度，让标签根据内容自然撑开 */
+  min-width: 100px;      /* 保留最小宽度，避免过短时与进度条间距过大 */
+  white-space: nowrap;   /* 强制文字不换行 */
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-dark);
+  flex-shrink: 0;        /* 防止标签被压缩 */
+}
+    .progress-bar-wrap { flex: 1; height: 12px; background: #e9ecef; border-radius: 10px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; border-radius: 10px; transition: width 0.3s; }
+    .progress-item .prog-val { font-size: 11px; color: var(--text-gray); font-family: 'DM Mono', monospace; width: 45px; text-align: right; flex-shrink: 0; }
+
+    /* ===== 弹窗 ===== */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: flex-end; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--card-white); border-radius: 32px 32px 0 0; padding: 28px 20px 32px; width: 100%; max-height: 85vh; overflow-y: auto; animation: slideUp 0.25s ease; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-gray); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .modal-close:hover { background: #f0f0f0; }
+
+    .subject-select { display: flex; flex-wrap: wrap; gap: 8px; }
+    .subject-btn { border-radius: 30px; background: linear-gradient(120deg, #f2f9ec, #e0f0d0); border: 1px solid var(--border-light); padding: 8px 12px; cursor: pointer; color: var(--text-gray); font-size: 13px; font-family: inherit; transition: all 0.2s; }
+    .subject-btn.selected { background: var(--green-main); border-color: var(--green-main); color: white; }
+
+    /* 待办弹窗 */
+    .todo-category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    .todo-cat-btn { padding: 12px 8px; border-radius: 16px; border: 1.5px solid var(--border-light); background: white; cursor: pointer; text-align: center; font-size: 14px; font-weight: 600; color: var(--text-dark); font-family: inherit; transition: all 0.2s; }
+    .todo-cat-btn.selected { background: var(--green-main); border-color: var(--green-main); color: white; }
+    .todo-sub-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .todo-sub-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-light); background: #f9f9f9; cursor: pointer; font-size: 12px; color: var(--text-gray); font-family: inherit; transition: all 0.2s; }
+    .todo-sub-btn.selected { background: var(--green-light); border-color: var(--green-main); color: var(--text-dark); }
+
+    /* AI */
+    .ai-review-btn { display: block; width: 100%; margin-top: 14px; padding: 12px 16px; border-radius: 12px; border: none; background: linear-gradient(135deg, var(--green-main) 0%, #C8E6C2 100%); color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.16s, transform 0.16s; box-shadow: 0 4px 14px rgba(168,213,162,0.35); }
+    .ai-review-result { background: #FFFBF5; border-radius: 24px; padding: 18px; border: 1px solid #E3F0CF; }
+
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-gray); }
+    .toast { background: var(--green-main); color: white; border-radius: 40px; position: fixed; top: 60px; left: 50%; transform: translateX(-50%); padding: 10px 20px; z-index: 300; opacity: 0; transition: opacity 0.3s; white-space: nowrap; font-size: 14px; }
+    .toast.show { opacity: 1; }
+    #user-info { font-weight: 500; color: var(--text-dark); }
+
+    /* 日记网格布局 */
+    #diary-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
     }
+
+    /* 单个日记卡片样式 */
     .diary-entry {
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
+      background: var(--card-white);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-light);
+      transition: transform 0.2s;
+      margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
     }
-    .diary-entry:last-child { border-bottom: none; }
+    .diary-entry:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-soft);
+    }
     .diary-entry-top {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 6px;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 6px;
     }
     .diary-entry-date {
-      font-size: 11px;
-      color: var(--text3);
-      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
     }
     .diary-entry-hours {
-      font-size: 11px;
-      color: var(--accent);
+      font-size: 12px;
+      color: var(--text-gray);
       font-family: 'DM Mono', monospace;
     }
     .diary-entry-text {
       font-size: 13px;
-      color: var(--text2);
-      line-height: 1.6;
+      color: var(--text-dark);
+      line-height: 1.5;
+      word-break: break-word;
+      margin-top: 8px;
     }
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text3);
-      font-size: 14px;
-      line-height: 2;
-    }
+
+    .wrong-mastered { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-gray); cursor: pointer; margin-top: 10px; }
+    .wrong-mastered input { accent-color: var(--green-main); }
+    .wrong-item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .wrong-date { font-size: 12px; color: var(--text-gray); }
+    .wrong-q { font-size: 14px; line-height: 1.5; margin-bottom: 6px; }
+    .wrong-analysis { font-size: 13px; color: var(--text-gray); line-height: 1.5; }
+    /* 通用图标样式 */
+.icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+/* 具体图标 */
+.icon-flower      { background-image: url('icons/flower.png'); }
+.icon-TrashBin    { background-image: url('icons/Trash Bin.png'); }
+.icon-WavingHand  { background-image: url('icons/WavingHand.png'); }
+.icon-Flame       { background-image: url('icons/Flame.png'); }
+#user-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#user-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+/* 只放大打卡页火苗区域的图标 */
+.streak-Flame .icon {
+  width: 60px;   /* 你想要的大小 */
+  height: 60px;
+}
+/* 日历格子基础样式（已经是圆形） */
+.cal-day {
+  position: relative;
+  overflow: hidden;  /* 确保图片不超出圆角 */
+  border-radius: 30px;  /* 保持圆形 */
+}
+
+.cal-day .mood-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: contain;      /* 完整显示图片，可能留白 */
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: inherit;
+  background-color: #e6f8d7;     /* 可选：与日历格子底色相近的颜色 */
+}
+/* 日历格子基础样式 */
+.cal-day {
+  position: relative;
+  overflow: hidden;
+  border-radius: 30px;
+}
+
+/* 图片样式：完全填充圆形，保持比例，居中裁剪 */
+.cal-day .mood-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;      /* 铺满并裁剪，保证填满圆形 */
+  object-position: center;
+  border-radius: inherit;
+}
   </style>
 </head>
 <body>
 <div class="toast" id="toast"></div>
 
-<!-- 首页 -->
+<!-- ===== 顶部状态栏 ===== -->
+<div class="top-bar">
+  <div id="user-info">
+    <span id="user-icon"></span>
+    <span id="user-name">未登录</span>
+  </div>
+  <div style="display: flex; gap: 8px;">
+    <button class="top-bar-login" id="login-btn" onclick="handleLogin()">登录 / 注册</button>
+    <button class="top-bar-login" id="logout-btn" onclick="handleLogout()" style="display: none; background: #ffe0e0; color: #cc4444;">退出登录</button>
+  </div>
+</div>
+
+<!-- ===== 首页 ===== -->
 <div class="page active" id="page-home">
   <div class="page-header">
     <div>
-      <div class="page-title">你好 👋</div>
-      <div class="page-sub" id="today-date">今天是备考的第 1 天</div>
+      <div class="page-title" style="font-size:1.8rem;">有趣的故事都是以有进无退作为开头</div>
+      <div class="page-sub" id="today-date"></div>
     </div>
   </div>
   <div class="exam-setup">
-    <div class="exam-name">省考倒计时</div>
+    <div class="exam-name">倒计时</div>
     <div class="countdown-days" id="countdown-num">--</div>
     <div class="countdown-label">距离考试还有 <span id="countdown-unit">天</span></div>
-    <div class="exam-date-input">
-      <input type="date" id="exam-date-input" placeholder="设置考试日期">
-    </div>
+    <div class="exam-date-input"><input type="date" id="exam-date-input" placeholder="设置考试日期"></div>
   </div>
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-num" id="stat-streak" style="color:var(--accent2)">0</div><div class="stat-label">连续打卡</div></div>
-    <div class="stat-card"><div class="stat-num" id="stat-hours" style="color:var(--accent)">0</div><div class="stat-label">累计学时</div></div>
-    <div class="stat-card"><div class="stat-num" id="stat-wrong" style="color:var(--red)">0</div><div class="stat-label">错题数</div></div>
-  </div>
-  <div class="card">
-    <div class="card-label">今日计划</div>
-    <div class="today-subjects">
-      <div class="subject-row"><div class="subject-dot" style="background:var(--accent)"></div><div class="subject-name">行测 · 言语理解</div><div class="subject-time">60 min</div><button class="subject-check" id="check-1" onclick="toggleCheck(1)"></button></div>
-      <div class="subject-row"><div class="subject-dot" style="background:var(--accent2)"></div><div class="subject-name">行测 · 判断推理</div><div class="subject-time">60 min</div><button class="subject-check" id="check-2" onclick="toggleCheck(2)"></button></div>
-      <div class="subject-row"><div class="subject-dot" style="background:var(--accent3)"></div><div class="subject-name">申论 · 阅读理解</div><div class="subject-time">90 min</div><button class="subject-check" id="check-3" onclick="toggleCheck(3)"></button></div>
-      <div class="subject-row"><div class="subject-dot" style="background:var(--yellow)"></div><div class="subject-name">行测 · 数量关系</div><div class="subject-time">45 min</div><button class="subject-check" id="check-4" onclick="toggleCheck(4)"></button></div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-streak" style="color:var(--green-main)">0</div>
+      <div class="stat-label">连续打卡</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-hours" style="color:var(--green-main)">0</div>
+      <div class="stat-label">累计学时</div>
+    </div>
+    <div class="stat-card circle-card">
+      <svg class="pie-svg" id="pie-svg" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="49" fill="#ffffff"/>
+        <text x="50" y="47" text-anchor="middle" font-size="10" fill="#9B928C">暂无</text>
+        <text x="50" y="60" text-anchor="middle" font-size="10" fill="#9B928C">错题</text>
+      </svg>
     </div>
   </div>
   <div class="card">
-    <div class="card-label">最近动态</div>
-    <div id="home-diary-preview"><div class="empty-state">还没有备考日记<br>去打卡页记录今天吧 ✏️</div></div>
+    <div class="card-label">
+      今日待办
+      <button onclick="openAddTodoModal()" style="background:none; border:none; font-size:18px; cursor:pointer; color:var(--green-main); line-height:1;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green-main)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+    <div class="today-subjects" id="today-subjects-container"></div>
   </div>
 </div>
 
-<!-- 打卡页 -->
+<!-- ===== 打卡页 ===== -->
 <div class="page" id="page-checkin">
-  <div class="page-header"><div><div class="page-title">每日打卡</div><div class="page-sub">坚持是最好的备考方式</div></div></div>
-  <div class="streak-hero"><div class="streak-fire">🔥</div><div class="streak-num" id="streak-display">0</div><div class="streak-label">天连续打卡</div></div>
-  <div class="card"><div class="card-label">本月打卡</div><div class="mini-cal" id="mini-cal"></div></div>
+  <div class="page-header">
+    <div>
+      <div class="page-title">日状态可视化</div>
+      <div class="page-sub">雄关漫道真如铁，而今迈步从头越</div>
+    </div>
+  </div>
+  <div class="streak-hero">
+    <div class="streak-Flame"><i class="icon icon-Flame"></i></div>
+    <div class="streak-num" id="streak-display">0</div>
+    <div class="streak-label">天连续打卡</div>
+  </div>
+
   <div class="card">
-    <div class="card-label">今天的记录</div>
+    <div class="card-label">本月打卡</div>
+    <div class="cal-nav">
+      <button onclick="changeCalMonth(-1)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="cal-nav-title" id="cal-nav-title"></span>
+      <button onclick="changeCalMonth(1)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="mini-cal" id="mini-cal"></div>
+    <div class="cal-actions">
+      <button class="cal-action-btn" onclick="补卡()" style="display: inline-flex; align-items: center; gap: 6px;">
+        <svg width="20" height="20" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+          <rect width="128" height="128" fill="#F2F2F4"/>
+          <rect x="20" y="24" width="88" height="88" rx="22" fill="#FFF8F3" stroke="#FFFFFF" stroke-width="10"/>
+          <rect x="20" y="24" width="88" height="28" rx="18" fill="#FFB8C8"/>
+          <rect x="38" y="16" width="12" height="24" rx="6" fill="#B9A7EA"/>
+          <rect x="78" y="16" width="12" height="24" rx="6" fill="#B9A7EA"/>
+          <g fill="#CBBBEF">
+            <rect x="36" y="64" width="14" height="14" rx="5"/>
+            <rect x="57" y="64" width="14" height="14" rx="5"/>
+            <rect x="78" y="64" width="14" height="14" rx="5"/>
+            <rect x="36" y="86" width="14" height="14" rx="5"/>
+            <rect x="57" y="86" width="14" height="14" rx="5"/>
+            <rect x="78" y="86" width="14" height="14" rx="5"/>
+          </g>
+          <ellipse cx="34" cy="36" rx="8" ry="5" fill="#FFFFFF" opacity="0.7"/>
+        </svg>
+        补卡
+      </button>
+      <button class="cal-action-btn" onclick="openDeleteCheckinModal()" style="display: inline-flex; align-items: center; gap: 6px;">
+        <i class="icon icon-TrashBin"></i> 删除打卡
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">今日记录</div>
     <div class="checkin-form">
-      <div><div class="form-label">今天学了多少小时？</div><div class="time-inputs"><div class="input-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" style="width:16px;height:16px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><input type="number" id="hours-input" placeholder="0" min="0" max="24" step="0.5"><span style="font-size:12px;color:var(--text3)">小时</span></div><div class="input-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" style="width:16px;height:16px;flex-shrink:0"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><input type="number" id="wrong-count-input" placeholder="0" min="0"><span style="font-size:12px;color:var(--text3)">道错题</span></div></div></div>
-      <div><div class="form-label">今天的心情？</div><div style="display:flex;gap:10px"><button class="subject-btn" onclick="selectMood(this,'😤')">😤 崩溃</button><button class="subject-btn" onclick="selectMood(this,'😐')">😐 一般</button><button class="subject-btn" onclick="selectMood(this,'😊')">😊 不错</button><button class="subject-btn" onclick="selectMood(this,'🔥')">🔥 超爽</button></div></div>
-      <div><div class="form-label">备考日记（选填）</div><textarea class="diary-input" id="diary-input" placeholder="今天做了什么题？哪里卡住了？还是只想吐槽一下... 都可以写"></textarea></div>
+      <div>
+        <div class="form-label">心情</div>
+        <div class="mood-grid">
+          <button class="mood-btn" onclick="selectMood(this,'😣')">
+            <img src="icons/crushed.png" width="20" height="20" style="vertical-align: middle;"> 崩溃
+          </button>
+          <button class="mood-btn" onclick="selectMood(this,'😟')">
+            <img src="icons/anxious.png" width="20" height="20"> 焦虑
+          </button>
+          <button class="mood-btn" onclick="selectMood(this,'😐')">
+            <img src="icons/okay.png" width="20" height="20"> 一般
+          </button>
+          <button class="mood-btn" onclick="selectMood(this,'😊')">
+            <img src="icons/good.png" width="20" height="20"> 不错
+          </button>
+          <button class="mood-btn" onclick="selectMood(this,'😆')">
+            <img src="icons/awesome.png" width="20" height="20"> 超爽
+          </button>
+        </div>
+      </div>
+      <div>
+        <div class="form-label">备考日记（选填）</div>
+        <textarea class="diary-input" id="diary-input" placeholder="今天做了什么题？哪里卡住了？还是只想吐槽一下... 都可以写"></textarea>
+      </div>
       <button class="btn-primary" onclick="submitCheckin()">✓ 完成今日打卡</button>
     </div>
   </div>
-  <div class="card"><div class="card-label">备考日记</div><div id="diary-list"><div class="empty-state">还没有日记<br>打卡后自动记录 📝</div></div></div>
-</div>
 
-<!-- 错题本 -->
-<div class="page" id="page-wrong">
-  <div class="page-header"><div><div class="page-title">错题本</div><div class="page-sub" id="wrong-count-label">共 0 道错题</div></div></div>
-  <div class="wrong-filters">
-    <button class="filter-chip active" onclick="filterWrong('全部', this)">全部</button>
-    <button class="filter-chip" onclick="filterWrong('言语理解', this)">言语理解</button>
-    <button class="filter-chip" onclick="filterWrong('判断推理', this)">判断推理</button>
-    <button class="filter-chip" onclick="filterWrong('数量关系', this)">数量关系</button>
-    <button class="filter-chip" onclick="filterWrong('资料分析', this)">资料分析</button>
-    <button class="filter-chip" onclick="filterWrong('申论', this)">申论</button>
-  </div>
-  <button class="add-wrong-btn" onclick="openWrongModal()">+ 添加错题</button>
-  <div id="wrong-list"></div>
-</div>
-
-<!-- 数据页 -->
-<div class="page" id="page-stats">
-  <div class="page-header"><div><div class="page-title">备考数据</div><div class="page-sub">你的努力都有迹可循</div></div></div>
-  <div class="card"><div class="card-label">近7天学习时长（小时）</div><div class="week-chart" id="week-chart"></div><div style="display:flex;gap:8px;margin-top:8px" id="week-labels"></div></div>
-  <div class="card"><div class="card-label">错题分布</div><div class="progress-section" id="subject-progress"></div></div>
-  <div class="card"><div class="card-label">打卡热力图（近90天）</div><div class="heatmap" id="heatmap"></div></div>
   <div class="card">
-    <div class="card-label">备考总览</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">累计学习</div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--accent)" id="total-hours-display">0h</div></div>
-      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">打卡天数</div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--accent2)" id="total-days-display">0天</div></div>
-      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">错题总数</div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--red)" id="total-wrong-display">0道</div></div>
-      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">已掌握</div><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--accent3)" id="mastered-display">0道</div></div>
+    <div class="card-label">备考日记</div>
+    <div class="cal-nav" style="margin-bottom: 12px;">
+      <button onclick="changeDiaryMonth(-1)">◀</button>
+      <span class="cal-nav-title" id="diary-month-label"></span>
+      <button onclick="changeDiaryMonth(1)">▶</button>
+    </div>
+    <div id="diary-list"></div>
+  </div>
+</div>
+
+<!-- ===== 错题本 ===== -->
+<div class="page" id="page-wrong">
+  <div class="page-header">
+    <div>
+      <div class="page-title">苟日新，日日新，又日新</div>
+      <div class="page-sub" id="wrong-count-label">共 0 道错题 · 掌握 0 道题</div>
+    </div>
+  </div>
+  <div class="wrong-grid" id="wrong-category-grid"></div>
+  <div id="wrong-list-section" style="display:none;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <button class="cal-action-btn" onclick="backToWrongGrid()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        返回
+      </button>
+      <span id="wrong-list-title" style="font-weight:600;font-size:16px;"></span>
+    </div>
+    <button class="add-wrong-btn" id="add-wrong-in-category-btn" onclick="openWrongModalForCategory()">+ 添加错题</button>
+    <div id="wrong-list"></div>
+  </div>
+</div>
+
+<!-- ===== 数据页 ===== -->
+<div class="page" id="page-stats">
+  <div class="page-header">
+    <div>
+      <div class="page-title">论持久战</div>
+      <div class="page-sub">让你的努力都有迹可循</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">学习时长趋势（小时）</div>
+    <div class="chart-controls">
+      <div class="range-buttons">
+        <button class="range-tab active" data-range="week" onclick="setStatsRange('week', this)">近7天</button>
+        <button class="range-tab" data-range="month" onclick="setStatsRange('month', this)">月视图</button>
+        <button class="range-tab" data-range="year" onclick="setStatsRange('year', this)">年视图</button>
+      </div>
+      <div id="month-year-nav" style="display: none;" class="month-year-nav">
+        <button id="prev-period" onclick="changePeriod(-1)">◀</button>
+        <span id="period-label">2025年3月</span>
+        <button id="next-period" onclick="changePeriod(1)">▶</button>
+      </div>
+    </div>
+    <div class="week-chart" id="week-chart"></div>
+  </div>
+  <div class="card">
+    <div class="card-label">错题分布</div>
+    <div class="pie-chart-container" id="error-pie-container">
+      <div class="empty-state">还没有错题数据</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">各题型学习进度</div>
+    <div id="study-progress-bars"></div>
+  </div>
+</div>
+
+<!-- ===== 底部导航 ===== -->
+<nav class="nav">
+  <button class="nav-item active" onclick="showPage('home', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>首页
+  </button>
+  <button class="nav-item" onclick="showPage('checkin', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/></svg>打卡
+  </button>
+  <button class="nav-item" onclick="showPage('wrong', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>错题
+  </button>
+  <button class="nav-item" onclick="showPage('stats', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>数据
+  </button>
+</nav>
+
+<!-- ===== 添加待办弹窗 ===== -->
+<div class="modal-overlay" id="todo-modal" onclick="closeTodoModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      添加待办任务
+      <button class="modal-close" onclick="closeTodoModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="form-label">选择类别</div>
+    <div class="todo-category-grid">
+      <button class="todo-cat-btn" onclick="selectTodoCategory(this,'行测')">行测</button>
+      <button class="todo-cat-btn" onclick="selectTodoCategory(this,'申论')">申论</button>
+      <button class="todo-cat-btn" onclick="selectTodoCategory(this,'其他')">其他</button>
+    </div>
+    <div id="todo-sub-options" style="display:none;">
+      <div class="form-label">选择子类别（可选）</div>
+      <div class="todo-sub-grid" id="todo-sub-grid"></div>
+    </div>
+    <div class="form-label">学习时长（分钟）</div>
+    <div class="input-wrap" style="margin-bottom:14px;">
+      <input type="number" id="todo-minutes-input" placeholder="60" min="1" max="600" value="60">
+      <span style="font-size:12px">分钟</span>
+    </div>
+    <button class="btn-primary" onclick="saveTodo()">添加待办</button>
+  </div>
+</div>
+
+<!-- ===== 添加错题弹窗 ===== -->
+<div class="modal-overlay" id="wrong-modal" onclick="closeWrongModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      添加错题
+      <button class="modal-close" onclick="closeWrongModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="wrong-form-standard">
+      <div class="form-row">
+        <div class="form-label">题目内容（简要记录）</div>
+        <textarea class="diary-input" id="wrong-q-input" placeholder="把题目或考点简单记一下..."></textarea>
+      </div>
+      <div class="form-row" id="wrong-analysis-row">
+        <div class="form-label">错误原因 / 知识点</div>
+        <textarea class="diary-input" id="wrong-analysis-input" placeholder="为什么错了？正确思路是什么？"></textarea>
+      </div>
+      <button class="btn-primary" onclick="saveWrong()">保存错题</button>
+    </div>
+    <div id="wrong-form-shenlun" style="display:none;">
+      <div class="form-row">
+        <div class="form-label">题目内容</div>
+        <textarea class="diary-input" id="wrong-shenlun-q-input" placeholder="请输入申论题目..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-label">你的作答</div>
+        <textarea class="diary-input" id="wrong-shenlun-answer-input" placeholder="请粘贴或输入你的申论作答..." style="min-height:120px;"></textarea>
+      </div>
+      <button class="btn-primary" onclick="saveShenlunWrong()">保存错题</button>
+      <button class="ai-review-btn" style="margin-top:10px;" onclick="submitShenlunAiReview()">✍️ AI批改</button>
+      <div id="shenlun-ai-result" style="margin-top:14px;"></div>
     </div>
   </div>
 </div>
 
-<!-- 底部导航 -->
-<nav class="nav">
-  <button class="nav-item active" onclick="showPage('home', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>首页</button>
-  <button class="nav-item" onclick="showPage('checkin', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/></svg>打卡</button>
-  <button class="nav-item" onclick="showPage('wrong', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>错题</button>
-  <button class="nav-item" onclick="showPage('stats', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>数据</button>
-</nav>
+<!-- ===== AI 申论批改弹窗 ===== -->
+<div class="modal-overlay" id="ai-shenlun-modal" onclick="closeAiShenlunModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      AI 申论批改
+      <button class="modal-close" onclick="closeAiShenlunModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="ai-form-view">
+      <div class="form-label">题目</div>
+      <div id="ai-answer-question" style="background:#f2f9ec;border-radius:12px;padding:12px;margin-bottom:12px;font-size:14px;line-height:1.5;"></div>
+      <div class="form-row">
+        <div class="form-label">你的作答</div>
+        <textarea class="diary-input" id="ai-answer-input" placeholder="请粘贴或输入你的申论作答..." style="min-height:120px;"></textarea>
+      </div>
+      <button type="button" class="btn-primary" id="ai-submit-btn">提交批改</button>
+    </div>
+    <div id="ai-result-view" style="display:none">
+      <div id="ai-review-body"></div>
+    </div>
+  </div>
+</div>
 
-<!-- 添加错题弹窗 -->
-<div class="modal-overlay" id="wrong-modal" onclick="closeWrongModal(event)">
-  <div class="modal">
-    <div class="modal-title">添加错题<button class="modal-close" onclick="closeWrongModal()">✕</button></div>
-    <div class="form-row"><div class="form-label">科目</div><div class="subject-select"><button class="subject-btn" onclick="selectSubject(this,'言语理解')">言语理解</button><button class="subject-btn" onclick="selectSubject(this,'判断推理')">判断推理</button><button class="subject-btn" onclick="selectSubject(this,'数量关系')">数量关系</button><button class="subject-btn" onclick="selectSubject(this,'资料分析')">资料分析</button><button class="subject-btn" onclick="selectSubject(this,'常识判断')">常识判断</button><button class="subject-btn" onclick="selectSubject(this,'申论')">申论</button></div></div>
-    <div class="form-row"><div class="form-label">题目内容（简要记录）</div><textarea class="diary-input" id="wrong-q-input" placeholder="把题目或考点简单记一下..."></textarea></div>
-    <div class="form-row"><div class="form-label">错误原因 / 知识点</div><textarea class="diary-input" id="wrong-analysis-input" placeholder="为什么错了？正确思路是什么？" style="min-height:70px"></textarea></div>
-    <button class="btn-primary" onclick="saveWrong()">保存错题</button>
+<!-- ===== 补卡弹窗 ===== -->
+<div class="modal-overlay" id="patch-modal" onclick="closePatchModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      补卡
+      <button class="modal-close" onclick="closePatchModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="form-label">选择补卡日期</div>
+    <div class="input-wrap" style="margin-bottom:14px;">
+      <input type="date" id="patch-date-input">
+    </div>
+    <div class="form-label">心情</div>
+    <div class="mood-grid" id="patch-mood-grid">
+      <button class="mood-btn" onclick="selectPatchMood(this,'😣')">
+        <img src="icons/crushed.png" width="24" height="24" style="vertical-align: middle;"> 崩溃
+      </button>
+      <button class="mood-btn" onclick="selectPatchMood(this,'😟')">
+        <img src="icons/anxious.png" width="24" height="24"> 焦虑
+      </button>
+      <button class="mood-btn" onclick="selectPatchMood(this,'😐')">
+        <img src="icons/okay.png" width="24" height="24"> 一般
+      </button>
+      <button class="mood-btn" onclick="selectPatchMood(this,'😊')">
+        <img src="icons/good.png" width="24" height="24"> 不错
+      </button>
+      <button class="mood-btn" onclick="selectPatchMood(this,'😆')">
+        <img src="icons/awesome.png" width="24" height="24"> 超爽
+      </button>
+    </div>
+    <div class="form-label">备考日记（选填）</div>
+    <textarea class="diary-input" id="patch-diary-input" placeholder="补记当天的学习情况..."></textarea>
+    <button class="btn-primary" onclick="savePatchCheckin()">确认补卡</button>
+  </div>
+</div>
+
+<!-- ===== 删除打卡弹窗 ===== -->
+<div class="modal-overlay" id="delete-checkin-modal" onclick="closeDeleteCheckinModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      删除指定日期的打卡
+      <button class="modal-close" onclick="closeDeleteCheckinModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="form-label">选择要删除的打卡日期</div>
+    <div class="input-wrap" style="margin-bottom:14px;">
+      <input type="date" id="delete-date-input">
+    </div>
+    <div id="delete-checkin-info" style="font-size:13px; color:var(--text-gray); margin-bottom:12px;"></div>
+    <button class="btn-primary" onclick="confirmDeleteCheckin()" style="background:#ff6b6b;">确认删除</button>
   </div>
 </div>
 
 <script>
-// 数据存储
-let state = JSON.parse(localStorage.getItem('beikao_state') || 'null') || {
-  examDate: '',
-  checkins: {},
-  wrongs: [],
-  todayChecks: {},
+// ========== 工具函数 ==========
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function todayStr() { return new Date().toISOString().slice(0,10); }
+function formatDate(d) { return `${d.getMonth()+1}月${d.getDate()}日`; }
+
+const weekAbbr = ['日','一','二','三','四','五','六'];
+// 标准错题分类（与 wrongCategories 的 key 完全一致）
+const STANDARD_SUBJECTS = ['政治理论&常识判断', '判断推理', '资料分析', '数量关系', '言语理解与表达', '申论', '其他'];
+// 旧名称到标准名称的映射（修复历史数据）
+const SUBJECT_MIGRATION_MAP = {
+  '常识判断': '政治理论&常识判断',
+  '政治理论': '政治理论&常识判断',
+  '言语理解': '言语理解与表达',
+  '言语': '言语理解与表达',
+  '判推': '判断推理',
+  '数资': '数量关系'
 };
-let selectedMood = '';
-let selectedSubject = '';
-let currentWrongFilter = '全部';
+
+// ========== 数据迁移：规范化错题分类名称 ==========
+function migrateWrongSubjects() {
+  if (!state.wrongs) return;
+  let changed = false;
+  for (let w of state.wrongs) {
+    let oldSub = w.subject;
+    let newSub = oldSub;
+    if (SUBJECT_MIGRATION_MAP[oldSub]) {
+      newSub = SUBJECT_MIGRATION_MAP[oldSub];
+    } else if (!STANDARD_SUBJECTS.includes(oldSub) && oldSub !== '其他') {
+      // 如果是不在标准列表里的未知类别，归为“其他”
+      newSub = '其他';
+    }
+    if (newSub !== oldSub) {
+      w.subject = newSub;
+      changed = true;
+    }
+  }
+  if (changed) {
+    save();
+    console.log('错题分类已规范化迁移');
+  }
+}
+
+// ========== Netlify Identity 登录 ==========
+let currentUser = null;
+function handleLogin() {
+  if (typeof window.netlifyIdentity !== 'undefined') {
+    window.netlifyIdentity.open();
+  } else {
+    showToast("请部署到 Netlify 以使用真实登录，当前使用本地存储");
+    let name = prompt('请输入你的昵称（本地模式）');
+    if (name) {
+  currentUser = { name, isLocal: true };
+  localStorage.setItem('mock_user', name);
+  document.getElementById('user-name').innerText = name;
+document.getElementById('user-icon').style.backgroundImage = "url('icons/WavingHand.png')";
+  document.getElementById('login-btn').style.display = 'none';
+  document.getElementById('logout-btn').style.display = 'inline-block';
+  showToast(`欢迎，${name}！`);
+}
+  }
+}
+function handleLogout() {
+  if (typeof window.netlifyIdentity !== 'undefined') {
+    window.netlifyIdentity.logout();
+  } else {
+    currentUser = null;
+    localStorage.removeItem('mock_user');
+    document.getElementById('user-info').innerText = '未登录';
+    document.getElementById('login-btn').style.display = 'inline-block';
+    document.getElementById('logout-btn').style.display = 'none';
+    showToast('已退出本地账户');
+  }
+}
+if (typeof window.netlifyIdentity !== 'undefined') {
+  window.netlifyIdentity.init();
+  window.netlifyIdentity.on('login', (user) => {
+  currentUser = user;
+  const displayName = user.user_metadata?.full_name || user.email.split('@')[0];
+  document.getElementById('user-info').innerText = `👋 ${displayName}`;
+  document.getElementById('login-btn').style.display = 'none';
+  document.getElementById('logout-btn').style.display = 'inline-block';
+  showToast(`欢迎回来，${displayName}`);
+});
+
+window.netlifyIdentity.on('logout', () => {
+  currentUser = null;
+  document.getElementById('user-info').innerText = '未登录';
+  document.getElementById('login-btn').style.display = 'inline-block';
+  document.getElementById('logout-btn').style.display = 'none';
+  showToast('已退出登录');
+});
+   const existingUser = window.netlifyIdentity.currentUser();
+  if (existingUser) {
+    currentUser = existingUser;
+    const displayName = existingUser.user_metadata?.full_name || existingUser.email.split('@')[0];
+    document.getElementById('user-info').innerText = `👋 ${displayName}`;
+    document.getElementById('login-btn').style.display = 'none';
+    document.getElementById('logout-btn').style.display = 'inline-block';
+  }
+}
+
+// ========== 数据层 ==========
+let state = JSON.parse(localStorage.getItem('beikao_state') || 'null') || {
+  examDate: '', checkins: {}, wrongs: [], plans: []
+};
+if (!state.plans) state.plans = [];
+// 执行一次数据迁移（将旧类别名称标准化）
+migrateWrongSubjects();
 
 function save() { localStorage.setItem('beikao_state', JSON.stringify(state)); }
-function today() { return new Date().toISOString().slice(0, 10); }
-function formatDate(d) { const date = new Date(d); return `${date.getMonth()+1}月${date.getDate()}日`; }
-function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
 
-// 页面切换
+// ========== 页面切换 ==========
 function showPage(id, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   btn.classList.add('active');
   if (id === 'stats') renderStats();
-  if (id === 'wrong') renderWrongList();
+  if (id === 'wrong') { renderWrongCategoryGrid(); resetWrongListView(); updateEbbingSection(); } // 刷新时确保艾宾浩斯区域同步
   if (id === 'checkin') renderCalendar();
+  if (id === 'home') { updateHomeStats(); drawSvgPie(); }
 }
 
-// 首页
+// ========== 首页 ==========
 function initHome() {
-  const d = new Date();
-  document.getElementById('today-date').textContent = `${d.getMonth()+1}月${d.getDate()}日 · ${['日','一','二','三','四','五','六'][d.getDay()]}`;
-  const examInput = document.getElementById('exam-date-input');
+  let d = new Date();
+  let y = d.getFullYear();
+  let m = String(d.getMonth() + 1).padStart(2, '0');
+  let day = String(d.getDate()).padStart(2, '0');
+  let wk = weekAbbr[d.getDay()];
+  document.getElementById('today-date').innerText = `${y}/${m}/${day}/${wk}.`;
+
+  let examInput = document.getElementById('exam-date-input');
   if (state.examDate) examInput.value = state.examDate;
-  updateCountdown();
   examInput.addEventListener('change', e => { state.examDate = e.target.value; save(); updateCountdown(); });
+  updateCountdown();
   updateHomeStats();
-  const todayChecks = state.todayChecks || {};
-  [1,2,3,4].forEach(i => { if (todayChecks[i]) { document.getElementById('check-'+i).classList.add('done'); document.getElementById('check-'+i).innerHTML = '✓'; } });
-  renderHomeDiaryPreview();
-}
-function updateCountdown() {
-  if (!state.examDate) { document.getElementById('countdown-num').textContent = '--'; return; }
-  const diff = Math.ceil((new Date(state.examDate) - new Date()) / 86400000);
-  document.getElementById('countdown-num').textContent = diff > 0 ? diff : 0;
-  document.getElementById('countdown-unit').textContent = diff > 0 ? '天' : '天（已到期）';
-}
-function updateHomeStats() {
-  const checkins = state.checkins;
-  let streak = 0;
-  const t = today();
-  let cur = new Date(t);
-  while (true) {
-    const key = cur.toISOString().slice(0,10);
-    if (checkins[key]) { streak++; cur.setDate(cur.getDate()-1); } else break;
-  }
-  let totalH = 0;
-  Object.values(checkins).forEach(c => totalH += (parseFloat(c.hours) || 0));
-  document.getElementById('stat-streak').textContent = streak;
-  document.getElementById('stat-hours').textContent = totalH.toFixed(1);
-  document.getElementById('stat-wrong').textContent = state.wrongs.length;
-  document.getElementById('streak-display').textContent = streak;
-}
-function renderHomeDiaryPreview() {
-  const entries = Object.entries(state.checkins).filter(([,v]) => v.diary).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,2);
-  const el = document.getElementById('home-diary-preview');
-  if (!entries.length) { el.innerHTML = '<div class="empty-state">还没有备考日记<br>去打卡页记录今天吧 ✏️</div>'; return; }
-  el.innerHTML = entries.map(([date, c]) => `<div class="diary-entry"><div class="diary-entry-top"><div class="diary-entry-date">${formatDate(date)}</div><div class="diary-entry-hours">${c.hours||0}h ${c.mood||''}</div></div><div class="diary-entry-text">${c.diary}</div></div>`).join('');
-}
-function toggleCheck(i) {
-  if (!state.todayChecks) state.todayChecks = {};
-  state.todayChecks[i] = !state.todayChecks[i];
-  save();
-  const btn = document.getElementById('check-'+i);
-  btn.classList.toggle('done', state.todayChecks[i]);
-  btn.innerHTML = state.todayChecks[i] ? '✓' : '';
-  if (state.todayChecks[i]) showToast('完成一个计划 💪');
+  renderPlanList();
 }
 
-// 打卡页
+function updateCountdown() {
+  if (!state.examDate) { document.getElementById('countdown-num').innerText = '--'; return; }
+  let diff = Math.ceil((new Date(state.examDate) - new Date()) / 86400000);
+  document.getElementById('countdown-num').innerText = diff > 0 ? diff : 0;
+  document.getElementById('countdown-unit').innerText = diff > 0 ? '天' : '天（已到期）';
+}
+
+function updateHomeStats() {
+  let streak = 0, cur = new Date(todayStr());
+  while (state.checkins[cur.toISOString().slice(0, 10)]) { streak++; cur.setDate(cur.getDate() - 1); }
+  let totalH = Object.values(state.checkins).reduce((s, c) => s + (parseFloat(c.hours) || 0), 0);
+  document.getElementById('stat-streak').innerText = streak;
+  document.getElementById('stat-hours').innerText = totalH.toFixed(1);
+  document.getElementById('streak-display').innerText = streak;
+  drawSvgPie();
+}
+
+function drawSvgPie() {
+  const svg = document.getElementById('pie-svg');
+  if (!svg) return;
+  const wrongTotal = state.wrongs.length;
+  const masteredTotal = state.wrongs.filter(w => w.mastered).length;
+  const unmastered = wrongTotal - masteredTotal;
+  const cx = 50, cy = 50, r = 48;
+
+  if (wrongTotal === 0) {
+    svg.innerHTML = `<circle cx="50" cy="50" r="48" fill="#ffffff"/><text x="50" y="47" text-anchor="middle" font-size="10" fill="#9B928C">暂无</text><text x="50" y="60" text-anchor="middle" font-size="10" fill="#9B928C">错题</text>`;
+    return;
+  }
+  const masteredRatio = masteredTotal / wrongTotal;
+  if (masteredTotal === 0) {
+    svg.innerHTML = `<circle cx="50" cy="50" r="48" fill="#F4B6BE"/><text x="50" y="42" text-anchor="middle" font-size="16" font-weight="bold" fill="#cc4444">${unmastered}</text><text x="50" y="56" text-anchor="middle" font-size="9" fill="#cc4444">错题</text>`;
+    return;
+  }
+  if (unmastered === 0) {
+    svg.innerHTML = `<circle cx="50" cy="50" r="48" fill="#C8E6C2"/><text x="50" y="42" text-anchor="middle" font-size="16" font-weight="bold" fill="#3a7a3a">${masteredTotal}</text><text x="50" y="56" text-anchor="middle" font-size="9" fill="#3a7a3a">已掌握</text>`;
+    return;
+  }
+  function polarToXY(deg, radius) {
+    const rad = (deg - 90) * Math.PI / 180;
+    return [cx + radius * Math.cos(rad), cy + radius * Math.sin(rad)];
+  }
+  const masteredDeg = masteredRatio * 360;
+  const [mx, my] = polarToXY(masteredDeg, r);
+  const largeArcMastered = masteredDeg > 180 ? 1 : 0;
+  const largeArcWrong = masteredDeg > 180 ? 0 : 1;
+  function labelPos(startDeg, endDeg, labelR) {
+    const mid = (startDeg + endDeg) / 2;
+    return polarToXY(mid, labelR);
+  }
+  const [lmx, lmy] = labelPos(0, masteredDeg, r * 0.55);
+  const [lwx, lwy] = labelPos(masteredDeg, 360, r * 0.55);
+  svg.innerHTML = `<path d="M ${cx} ${cy} L ${cx} ${cy - r} A ${r} ${r} 0 ${largeArcMastered} 1 ${mx} ${my} Z" fill="#C8E6C2"/><path d="M ${cx} ${cy} L ${mx} ${my} A ${r} ${r} 0 ${largeArcWrong} 1 ${cx} ${cy - r} Z" fill="#F4B6BE"/><text x="${lmx}" y="${lmy - 3}" text-anchor="middle" font-size="12" font-weight="bold" fill="#3a7a3a">${masteredTotal}</text><text x="${lmx}" y="${lmy + 8}" text-anchor="middle" font-size="7" fill="#3a7a3a">掌握</text><text x="${lwx}" y="${lwy - 3}" text-anchor="middle" font-size="12" font-weight="bold" fill="#cc4444">${unmastered}</text><text x="${lwx}" y="${lwy + 8}" text-anchor="middle" font-size="7" fill="#cc4444">错题</text>`;
+}
+
+// ========== 今日待办系统 ==========
+const xingceSubjects = ['政治理论&常识判断', '判断推理', '资料分析', '数量关系', '言语理解与表达'];
+let todoSelectedCategory = '';
+let todoSelectedSub = '';
+
+function openAddTodoModal() {
+  todoSelectedCategory = '';
+  todoSelectedSub = '';
+  document.querySelectorAll('.todo-cat-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('todo-sub-options').style.display = 'none';
+  document.getElementById('todo-minutes-input').value = '60';
+  document.getElementById('todo-modal').classList.add('open');
+}
+function closeTodoModal(e) {
+  if (!e || e.target === document.getElementById('todo-modal')) document.getElementById('todo-modal').classList.remove('open');
+}
+function selectTodoCategory(btn, cat) {
+  document.querySelectorAll('.todo-cat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  todoSelectedCategory = cat;
+  todoSelectedSub = '';
+  let subDiv = document.getElementById('todo-sub-options');
+  let subGrid = document.getElementById('todo-sub-grid');
+  if (cat === '行测') {
+    subDiv.style.display = 'block';
+    subGrid.innerHTML = xingceSubjects.map(s => `<button class="todo-sub-btn" onclick="selectTodoSub(this,'${s}')">${s}</button>`).join('');
+  } else {
+    subDiv.style.display = 'none';
+    subGrid.innerHTML = '';
+  }
+}
+function selectTodoSub(btn, sub) {
+  document.querySelectorAll('.todo-sub-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  todoSelectedSub = sub;
+}
+function saveTodo() {
+  if (!todoSelectedCategory) { showToast('请选择类别'); return; }
+  let minutes = parseInt(document.getElementById('todo-minutes-input').value) || 60;
+  let name = todoSelectedCategory;
+  if (todoSelectedSub) name = `行测·${todoSelectedSub}`;
+  state.plans.push({ id: Date.now(), name: name, category: todoSelectedCategory, subCategory: todoSelectedSub || '', minutes: minutes, completed: false });
+  save();
+  renderPlanList();
+  closeTodoModal();
+  showToast(`✅ 已添加：${name} ${minutes}min`);
+}
+function renderPlanList() {
+  let container = document.getElementById('today-subjects-container');
+  if (!container) return;
+  if (!state.plans.length) { container.innerHTML = '<div class="empty-state">暂无待办，点击上方 + 添加</div>'; return; }
+  container.innerHTML = state.plans.map(p => `
+    <div class="subject-row">
+      <div class="subject-dot" style="background:${p.completed ? '#b0b0b0' : 'var(--green-main)'}"></div>
+      <div class="subject-name" style="${p.completed ? 'text-decoration:line-through;opacity:0.6' : ''}">${escapeHtml(p.name)}</div>
+      <div class="subject-time">${p.minutes} min</div>
+      <button class="subject-check ${p.completed ? 'done' : ''}" onclick="togglePlan(${p.id})">${p.completed ? '✓' : ''}</button>
+      <button class="icon-btn" onclick="editPlan(${p.id})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-gray)" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="icon-btn" onclick="deletePlan(${p.id})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e57373" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+    </div>`).join('');
+}
+window.togglePlan = function(id) {
+  let p = state.plans.find(p => p.id === id);
+  if (p) { p.completed = !p.completed; save(); updateTodayHoursFromPlans(); renderPlanList(); showToast(p.completed ? `✅ ${p.name} +${p.minutes}分钟` : `⏸ 取消 ${p.name}`); }
+};
+window.editPlan = function(id) {
+  let p = state.plans.find(p => p.id === id);
+  if (!p) return;
+  let newName = prompt('修改计划名称', p.name);
+  if (newName) p.name = newName.trim();
+  let newMin = parseInt(prompt('修改时长(分钟)', p.minutes));
+  if (!isNaN(newMin) && newMin > 0) p.minutes = newMin;
+  save(); renderPlanList(); if (p.completed) updateTodayHoursFromPlans(); showToast(`✏️ 已更新：${p.name}`);
+};
+window.deletePlan = function(id) {
+  if (!confirm('确定删除？')) return;
+  let idx = state.plans.findIndex(p => p.id === id);
+  if (idx !== -1) { let completed = state.plans[idx].completed; state.plans.splice(idx, 1); save(); renderPlanList(); if (completed) updateTodayHoursFromPlans(); showToast('🗑 已删除'); }
+};
+function updateTodayHoursFromPlans() {
+  let completedPlans = state.plans.filter(p => p.completed);
+  let plannedMinutes = completedPlans.reduce((s, p) => s + p.minutes, 0);
+  let key = todayStr();
+  let existing = state.checkins[key] || {};
+  let totalHours = plannedMinutes / 60;
+  let subjectMinutes = {};
+  completedPlans.forEach(p => {
+    let cat = getProgressCategory(p.name, p.category, p.subCategory);
+    if (cat) subjectMinutes[cat] = (subjectMinutes[cat] || 0) + p.minutes;
+  });
+  state.checkins[key] = { ...existing, hours: totalHours, plannedMinutes, subjectMinutes, ts: Date.now() };
+  save();
+  updateHomeStats();
+}
+function getProgressCategory(name, category, subCategory) {
+  if (subCategory) {
+    if (subCategory.includes('政治') || subCategory.includes('常识')) return '政治理论&常识判断';
+    if (subCategory.includes('判断')) return '判断推理';
+    if (subCategory.includes('资料')) return '资料分析';
+    if (subCategory.includes('数量')) return '数量关系';
+    if (subCategory.includes('言语')) return '言语理解与表达';
+  }
+  if (category === '申论' || name.includes('申论')) return '申论';
+  if (name.includes('政治') || name.includes('常识')) return '政治理论&常识判断';
+  if (name.includes('判断')) return '判断推理';
+  if (name.includes('资料')) return '资料分析';
+  if (name.includes('数量')) return '数量关系';
+  if (name.includes('言语')) return '言语理解与表达';
+  if (category === '行测') return null;
+  return null;
+}
+
+// ========== 打卡页 ==========
+let calYear, calMonth;
+function initCalendarDate() {
+  let now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+}
+function changeCalMonth(delta) {
+  calMonth += delta;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
 function renderCalendar() {
-  const now = new Date();
-  const year = now.getFullYear(), month = now.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const todayNum = now.getDate();
-  const headers = ['日','一','二','三','四','五','六'];
-  let html = headers.map(h => `<div class="cal-day header">${h}</div>`).join('');
-  for (let i=0; i<firstDay; i++) html += '<div class="cal-day"></div>';
-  for (let d=1; d<=daysInMonth; d++) {
-    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isToday = d===todayNum;
-    const checked = !!state.checkins[key];
+  if (calYear === undefined) initCalendarDate();
+  let now = new Date();
+  let firstDay = new Date(calYear, calMonth, 1).getDay();
+  let daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  let todayNum = (calYear === now.getFullYear() && calMonth === now.getMonth()) ? now.getDate() : -1;
+  document.getElementById('cal-nav-title').innerText = `${calYear}年${calMonth + 1}月`;
+  let html = ['日','一','二','三','四','五','六'].map(h => `<div class="cal-day header">${h}</div>`).join('');
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    let key = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    let isToday = d === todayNum;
+    let checkin = state.checkins[key];
+    let checked = !!checkin;
+    let mood = checkin ? checkin.mood : '';
     let cls = 'cal-day';
-    if (checked) cls += ' checked';
+    if (checked && mood) cls += ' has-mood';
+    else if (checked) cls += ' checked';
     else if (isToday) cls += ' today';
-    html += `<div class="${cls}">${d}</div>`;
+    let inner = '';
+if (checked && mood) {
+  let moodImgUrl = getMoodImageUrl(mood);
+  if (moodImgUrl) {
+    inner = `<img class="mood-img" src="${moodImgUrl}" alt="mood">`;
+  } else {
+    inner = `<span class="mood-overlay">${mood}</span>`;
+  }
+} else {
+  inner = d;
+}
+    html += `<div class="${cls}">${inner}</div>`;
   }
   document.getElementById('mini-cal').innerHTML = html;
-  renderDiaryList();
+  renderDiaryListByMonth(); // 改用按月过滤的新函数
   updateHomeStats();
 }
-function renderDiaryList() {
-  const entries = Object.entries(state.checkins).sort((a,b)=>b[0].localeCompare(a[0]));
-  const el = document.getElementById('diary-list');
-  if (!entries.length) { el.innerHTML = '<div class="empty-state">还没有日记<br>打卡后自动记录 📝</div>'; return; }
-  el.innerHTML = entries.map(([date, c]) => `<div class="diary-entry"><div class="diary-entry-top"><div class="diary-entry-date">${formatDate(date)} ${c.mood||''}</div><div class="diary-entry-hours">${c.hours||0}h · ${c.wrongCount||0}道错题</div></div><div class="diary-entry-text">${c.diary || '<span style="color:var(--text3)">（无日记）</span>'}</div></div>`).join('');
+let selectedMood = '';
+function selectMood(btn, mood) {
+  document.querySelectorAll('#page-checkin .mood-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected'); selectedMood = mood;
 }
-function selectMood(btn, mood) { document.querySelectorAll('#page-checkin .subject-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedMood = mood; }
 function submitCheckin() {
-  const hours = parseFloat(document.getElementById('hours-input').value) || 0;
-  const wrongCount = parseInt(document.getElementById('wrong-count-input').value) || 0;
-  const diary = document.getElementById('diary-input').value.trim();
-  const key = today();
-  state.checkins[key] = { hours, wrongCount, mood: selectedMood, diary, ts: Date.now() };
+  let diary = document.getElementById('diary-input').value.trim();
+  let key = todayStr();
+  let completedPlans = state.plans.filter(p => p.completed);
+  let plannedMinutes = completedPlans.reduce((s,p) => s+p.minutes,0);
+  let totalHours = plannedMinutes/60;
+  let todayWrongCount = state.wrongs.filter(w => w.date === key).length;
+  let subjectMinutes = {};
+  completedPlans.forEach(p => {
+    let cat = getProgressCategory(p.name, p.category, p.subCategory);
+    if (cat) subjectMinutes[cat] = (subjectMinutes[cat] || 0) + p.minutes;
+  });
+  let existing = state.checkins[key] || {};
+  state.checkins[key] = { ...existing, hours: totalHours, wrongCount: todayWrongCount, mood: selectedMood || existing.mood || '', diary: diary || existing.diary || '', plannedMinutes, subjectMinutes, ts: Date.now() };
   save();
   showToast('打卡成功 🎉 加油！');
-  document.getElementById('hours-input').value = '';
-  document.getElementById('wrong-count-input').value = '';
   document.getElementById('diary-input').value = '';
   selectedMood = '';
-  document.querySelectorAll('#page-checkin .subject-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('#page-checkin .mood-btn').forEach(b => b.classList.remove('selected'));
   renderCalendar();
-  renderHomeDiaryPreview();
   updateHomeStats();
+  renderPlanList();
+}
+let patchSelectedMood = '';
+function 补卡() {
+  patchSelectedMood = '';
+  document.querySelectorAll('#patch-mood-grid .mood-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('patch-date-input').value = '';
+  document.getElementById('patch-diary-input').value = '';
+  document.getElementById('patch-modal').classList.add('open');
+}
+function closePatchModal(e) {
+  if (!e || e.target === document.getElementById('patch-modal')) document.getElementById('patch-modal').classList.remove('open');
+}
+function selectPatchMood(btn, mood) {
+  document.querySelectorAll('#patch-mood-grid .mood-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected'); patchSelectedMood = mood;
+}
+function savePatchCheckin() {
+  let dateVal = document.getElementById('patch-date-input').value;
+  if (!dateVal) { showToast('请选择日期'); return; }
+  if (dateVal >= todayStr()) { showToast('只能补过去的日期'); return; }
+  let diary = document.getElementById('patch-diary-input').value.trim();
+  let existing = state.checkins[dateVal] || {};
+  state.checkins[dateVal] = { ...existing, hours: existing.hours || 0, wrongCount: existing.wrongCount || 0, mood: patchSelectedMood || existing.mood || '😐', diary: diary || existing.diary || '（补卡）', ts: Date.now(), patched: true };
+  save(); closePatchModal(); renderCalendar(); updateHomeStats(); showToast('补卡成功 ✅');
 }
 
-// 错题本
-const subjectColors = { '言语理解':'#7c6af7','判断推理':'#f7836a','数量关系':'#f7d06a','资料分析':'#5dd8a4','常识判断':'#6af0f7','申论':'#f76a9f' };
-function selectSubject(btn, sub) { document.querySelectorAll('.subject-select .subject-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedSubject = sub; }
-function openWrongModal() { document.getElementById('wrong-modal').classList.add('open'); selectedSubject = ''; }
-function closeWrongModal(e) { if (!e || e.target===document.getElementById('wrong-modal')) { document.getElementById('wrong-modal').classList.remove('open'); document.getElementById('wrong-q-input').value = ''; document.getElementById('wrong-analysis-input').value = ''; document.querySelectorAll('.subject-select .subject-btn').forEach(b=>b.classList.remove('selected')); } }
-function saveWrong() {
-  const q = document.getElementById('wrong-q-input').value.trim();
-  const analysis = document.getElementById('wrong-analysis-input').value.trim();
-  if (!selectedSubject) { showToast('请选择科目'); return; }
-  if (!q) { showToast('请填写题目内容'); return; }
-  state.wrongs.push({ id: Date.now(), subject: selectedSubject, question: q, analysis, date: today(), mastered: false });
-  save();
-  closeWrongModal();
+// 切换日记月份
+let diaryYear = new Date().getFullYear();
+let diaryMonth = new Date().getMonth();
+function changeDiaryMonth(delta) {
+  let newMonth = diaryMonth + delta;
+  if (newMonth < 0) {
+    newMonth = 11;
+    diaryYear--;
+  } else if (newMonth > 11) {
+    newMonth = 0;
+    diaryYear++;
+  }
+  diaryMonth = newMonth;
+  renderDiaryListByMonth();
+}
+
+function renderDiaryListByMonth() {
+  document.getElementById('diary-month-label').innerText = `${diaryYear}年${diaryMonth+1}月`;
+  const filtered = Object.entries(state.checkins)
+    .filter(([dateKey]) => {
+      const [year, month] = dateKey.split('-');
+      return parseInt(year) === diaryYear && parseInt(month) === (diaryMonth+1);
+    })
+    .sort((a, b) => b[0].localeCompare(a[0]));
+  const container = document.getElementById('diary-list');
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-state">暂无该月日记<br>去打卡记录吧 📝</div>';
+    return;
+  }
+  const html = filtered.map(([dateKey, checkin]) => {
+    const dayWrongCount = state.wrongs.filter(w => w.date === dateKey).length;
+    const formattedDate = formatDate(new Date(dateKey));
+    const moodEmoji = checkin.mood || '';
+    const moodImgUrl = moodEmoji ? getMoodImageUrl(moodEmoji) : null;
+    const moodHtml = moodImgUrl ? `<img src="${moodImgUrl}" width="28" height="28" style="vertical-align: middle; border-radius: 14px;">` : '';
+    const diaryText = checkin.diary || '<span style="color:var(--text-gray)">（无日记）</span>';
+    const hours = (checkin.hours || 0).toFixed(1);
+    return `
+      <div class="diary-entry">
+        <div class="diary-entry-top">
+          <div class="diary-entry-date">${formattedDate} ${moodHtml}</div>
+          <div class="diary-entry-hours">${hours}h · ${dayWrongCount}道错题</div>
+        </div>
+        <div class="diary-entry-text">${diaryText}</div>
+      </div>
+    `;
+  }).join('');
+  container.innerHTML = html;
+}
+
+// ========== 错题本 ==========
+const wrongCategories = [
+  { key: '政治理论&常识判断', icon: '📚', color: '#F7B3C8' },
+  { key: '判断推理', icon: '🧩', color: '#EED9BE' },
+  { key: '资料分析', icon: '📊', color: '#F0F0C8' },
+  { key: '数量关系', icon: '🔢', color: '#D0C098' },
+  { key: '言语理解与表达', icon: '📝', color: '#80B0A8' },
+  { key: '申论', icon: '✍️', color: '#90B080' },
+  { key: '其他', icon: '📌', color: '#E8D078' }
+];
+let currentWrongCategory = '';
+function renderWrongCategoryGrid() {
+  let grid = document.getElementById('wrong-category-grid');
+  let totalWrong = state.wrongs.length;
+  let totalMastered = state.wrongs.filter(w => w.mastered).length;
+  document.getElementById('wrong-count-label').innerText = `共 ${totalWrong} 道错题 · 掌握 ${totalMastered} 道题`;
+  grid.innerHTML = wrongCategories.map(cat => {
+    let count = state.wrongs.filter(w => w.subject === cat.key).length;
+    let mastered = state.wrongs.filter(w => w.subject === cat.key && w.mastered).length;
+    return `<div class="wrong-category-card" onclick="openWrongCategory('${cat.key}')" style="border-left:4px solid ${cat.color}"><div class="cat-icon">${cat.icon}</div><div class="cat-name">${cat.key}</div><div class="cat-count">${count}题 · 掌握${mastered}</div></div>`;
+  }).join('');
+}
+function resetWrongListView() {
+  document.getElementById('wrong-category-grid').style.display = 'grid';
+  document.getElementById('wrong-list-section').style.display = 'none';
+}
+function openWrongCategory(cat) {
+  currentWrongCategory = cat;
+  document.getElementById('wrong-category-grid').style.display = 'none';
+  document.getElementById('wrong-list-section').style.display = 'block';
+  document.getElementById('wrong-list-title').innerText = cat;
   renderWrongList();
-  updateHomeStats();
-  showToast('错题已记录 📌');
 }
-function filterWrong(f, btn) { currentWrongFilter = f; document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderWrongList(); }
+function backToWrongGrid() { resetWrongListView(); renderWrongCategoryGrid(); }
+function openWrongModalForCategory() {
+  selectedSubject = currentWrongCategory;
+  document.getElementById('wrong-q-input').value = '';
+  document.getElementById('wrong-analysis-input').value = '';
+  if (currentWrongCategory === '申论') {
+    document.getElementById('wrong-form-standard').style.display = 'none';
+    document.getElementById('wrong-form-shenlun').style.display = 'block';
+    document.getElementById('wrong-shenlun-q-input').value = '';
+    document.getElementById('wrong-shenlun-answer-input').value = '';
+    document.getElementById('shenlun-ai-result').innerHTML = '';
+  } else {
+    document.getElementById('wrong-form-standard').style.display = 'block';
+    document.getElementById('wrong-form-shenlun').style.display = 'none';
+  }
+  document.getElementById('wrong-modal').classList.add('open');
+}
+let selectedSubject = '';
+function closeWrongModal(e) {
+  if (!e || e.target === document.getElementById('wrong-modal')) document.getElementById('wrong-modal').classList.remove('open');
+}
+function saveWrong() {
+  let q = document.getElementById('wrong-q-input').value.trim();
+  let analysis = document.getElementById('wrong-analysis-input').value.trim();
+  if (!q) { showToast('请填写题目内容'); return; }
+  state.wrongs.push({ id: Date.now(), subject: currentWrongCategory || selectedSubject, question: q, analysis, date: todayStr(), mastered: false });
+  save(); closeWrongModal(); renderWrongList(); updateHomeStats(); drawSvgPie(); renderWrongCategoryGrid(); updateEbbingSection(); showToast('错题已记录 📌');
+}
+function saveShenlunWrong() {
+  let q = document.getElementById('wrong-shenlun-q-input').value.trim();
+  let answer = document.getElementById('wrong-shenlun-answer-input').value.trim();
+  if (!q) { showToast('请填写题目内容'); return; }
+  state.wrongs.push({ id: Date.now(), subject: '申论', question: q, analysis: '', answer: answer, date: todayStr(), mastered: false });
+  save(); closeWrongModal(); renderWrongList(); updateHomeStats(); drawSvgPie(); renderWrongCategoryGrid(); updateEbbingSection(); showToast('申论错题已记录 📌');
+}
 function renderWrongList() {
-  let wrongs = state.wrongs;
-  if (currentWrongFilter !== '全部') wrongs = wrongs.filter(w => w.subject === currentWrongFilter);
-  wrongs = wrongs.slice().reverse();
-  document.getElementById('wrong-count-label').textContent = `共 ${state.wrongs.length} 道错题`;
-  const el = document.getElementById('wrong-list');
-  if (!wrongs.length) { el.innerHTML = '<div class="empty-state">还没有错题<br>点击上方添加 💪</div>'; return; }
-  el.innerHTML = wrongs.map(w => `<div class="wrong-item"><div class="wrong-item-top"><div class="wrong-tag" style="background:${subjectColors[w.subject]||'#7c6af7'}22;color:${subjectColors[w.subject]||'#7c6af7'}">${w.subject}</div><div class="wrong-date">${formatDate(w.date)}</div></div><div class="wrong-q">${w.question}</div>${w.analysis ? `<div class="wrong-analysis">💡 ${w.analysis}</div>` : ''}<label class="wrong-mastered"><input type="checkbox" ${w.mastered?'checked':''} onchange="toggleMastered(${w.id})"> 已掌握，不再提醒</label></div>`).join('');
+  let wrongs = state.wrongs.filter(w => w.subject === currentWrongCategory).slice().reverse();
+  let el = document.getElementById('wrong-list');
+  if (!wrongs.length) { el.innerHTML = '<div class="empty-state">暂无错题<br>点击上方添加 💪</div>'; return; }
+  const subjectColors = {
+  '政治理论&常识判断': '#F0F0C8',   // 淡黄色
+  '判断推理': '#FED5D6',           // 浅粉红
+  '数量关系': '#B8D4E3',           // 浅蓝
+  '资料分析': '#C8E6C2',           // 浅绿
+  '言语理解与表达': '#80B0A8',     // 蓝绿色
+  '申论': '#90B080',               // 灰绿色
+  '其他': '#E8D078'                // 暖黄色
+};
+  el.innerHTML = wrongs.map(w => `
+    <div class="wrong-item">
+      <div class="wrong-item-top">
+        <div class="wrong-tag" style="background:${subjectColors[w.subject]||'#eee'}33;color:${subjectColors[w.subject]||'#999'}">${escapeHtml(w.subject)}</div>
+        <div class="wrong-date">${formatDate(new Date(w.date))}</div>
+        <button class="icon-btn" onclick="deleteWrong(${w.id})" style="margin-left:auto;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e57373" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+      </div>
+      <div class="wrong-q">${escapeHtml(w.question)}</div>
+      ${w.analysis ? `<div class="wrong-analysis">💡 ${escapeHtml(w.analysis)}</div>` : ''}
+      ${w.answer ? `<div class="wrong-analysis" style="margin-top:6px">📝 作答: ${escapeHtml(w.answer).substring(0,80)}...</div>` : ''}
+      <label class="wrong-mastered"><input type="checkbox" ${w.mastered ? 'checked' : ''} onchange="toggleMastered(${w.id})"> 已掌握</label>
+      ${w.subject === '申论' ? `<button class="ai-review-btn" onclick="openAiShenlunModal(${w.id})">✍️ AI批改</button>` : ''}
+    </div>`).join('');
 }
-function toggleMastered(id) { const w = state.wrongs.find(x=>x.id===id); if(w){ w.mastered=!w.mastered; save(); } }
+function toggleMastered(id) {
+  let w = state.wrongs.find(x => x.id === id);
+  if (w) { w.mastered = !w.mastered; save(); renderWrongList(); updateHomeStats(); drawSvgPie(); renderWrongCategoryGrid(); updateEbbingSection(); }
+}
 
-// 数据页
+function deleteWrong(id) {
+  if (!confirm('确定要永久删除这道错题吗？')) return;
+  const index = state.wrongs.findIndex(w => w.id === id);
+  if (index !== -1) {
+    state.wrongs.splice(index, 1);
+    save();
+    // 刷新错题本相关界面
+    renderWrongList();               // 刷新当前分类的错题列表
+    renderWrongCategoryGrid();       // 刷新错题分类网格（数量归零）
+    updateHomeStats();               // 更新首页连续打卡和总学时（如果错题学时关联？无，但饼图依赖）
+    drawSvgPie();                    // 重新绘制首页饼图
+    updateEbbingSection();           // 刷新艾宾浩斯复习区域（非常重要！）
+    showToast('错题已删除');
+  }
+}
+
+// ========== AI 申论批改 ==========
+let aiReviewWrongId = null;
+function openAiShenlunModal(id) {
+  let w = state.wrongs.find(x => x.id === id);
+  if (!w) return;
+  aiReviewWrongId = id;
+  document.getElementById('ai-answer-question').innerText = w.question;
+  document.getElementById('ai-answer-input').value = w.answer || '';
+  document.getElementById('ai-submit-btn').disabled = false;
+  document.getElementById('ai-submit-btn').innerText = '提交批改';
+  document.getElementById('ai-form-view').style.display = 'block';
+  document.getElementById('ai-result-view').style.display = 'none';
+  document.getElementById('ai-shenlun-modal').classList.add('open');
+}
+function closeAiShenlunModal(e) {
+  if (!e || e.target === document.getElementById('ai-shenlun-modal')) document.getElementById('ai-shenlun-modal').classList.remove('open');
+}
+async function submitAiReview() {
+  if (!aiReviewWrongId) return;
+  let w = state.wrongs.find(x => x.id === aiReviewWrongId);
+  let answer = document.getElementById('ai-answer-input').value.trim();
+  if (!answer) { showToast('请填写作答'); return; }
+  document.getElementById('ai-submit-btn').disabled = true;
+  document.getElementById('ai-submit-btn').innerText = '批改中...';
+  document.getElementById('ai-result-view').style.display = 'block';
+  document.getElementById('ai-form-view').style.display = 'none';
+  document.getElementById('ai-review-body').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-gray)">正在批改中...</div>';
+  try {
+    let res = await fetch('/.netlify/functions/ai-review', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ question:w.question, answer }) });
+    let data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    let r = data.review;
+    document.getElementById('ai-review-body').innerHTML = `<div class="ai-review-result"><div style="font-size:28px;font-weight:700;color:var(--green-main);margin-bottom:8px;">${r.score||'—'}/100</div><div>${r.summary||''}</div><div>✅ 优点: ${(r.strengths||[]).join('、')}</div><div>📌 改进: ${(r.improvements||[]).join('、')}</div><div style="margin-top:8px;">${r.detailed||''}</div></div>`;
+  } catch(e) { document.getElementById('ai-review-body').innerHTML = `<div class="ai-review-result">批改失败: ${e.message}</div>`; }
+  finally { document.getElementById('ai-submit-btn').disabled=false; document.getElementById('ai-submit-btn').innerText='提交批改'; }
+}
+async function submitShenlunAiReview() {
+  let question = document.getElementById('wrong-shenlun-q-input').value.trim();
+  let answer = document.getElementById('wrong-shenlun-answer-input').value.trim();
+  if (!question || !answer) { showToast('请填写题目和作答'); return; }
+  let resultDiv = document.getElementById('shenlun-ai-result');
+  resultDiv.innerHTML = '<div style="text-align:center;padding:12px;color:var(--text-gray)">批改中...</div>';
+  try {
+    let res = await fetch('/.netlify/functions/ai-review', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ question, answer }) });
+    let data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    let r = data.review;
+    resultDiv.innerHTML = `<div class="ai-review-result"><div style="font-size:24px;font-weight:700;color:var(--green-main);margin-bottom:8px;">${r.score||'—'}/100</div><div>${r.summary||''}</div><div>✅ ${(r.strengths||[]).join('、')}</div><div>📌 ${(r.improvements||[]).join('、')}</div><div style="margin-top:8px;">${r.detailed||''}</div></div>`;
+  } catch(e) { resultDiv.innerHTML = `<div class="ai-review-result">批改失败: ${e.message}</div>`; }
+}
+
+// ========== 数据页 ==========
+let statsRange = 'week';
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+
+function setStatsRange(range, btn) {
+  statsRange = range;
+  document.querySelectorAll('.range-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const navDiv = document.getElementById('month-year-nav');
+  if (range === 'week') {
+    navDiv.style.display = 'none';
+    renderWeekChart();
+  } else if (range === 'month') {
+    navDiv.style.display = 'flex';
+    updatePeriodLabel();
+    renderMonthChart(currentYear, currentMonth);
+  } else if (range === 'year') {
+    navDiv.style.display = 'flex';
+    updatePeriodLabel();
+    renderYearChart(currentYear);
+  }
+}
+function updatePeriodLabel() {
+  const labelSpan = document.getElementById('period-label');
+  if (statsRange === 'month') {
+    labelSpan.innerText = `${currentYear}年${currentMonth+1}月`;
+  } else if (statsRange === 'year') {
+    labelSpan.innerText = `${currentYear}年`;
+  }
+}
+function changePeriod(delta) {
+  if (statsRange === 'month') {
+    let newMonth = currentMonth + delta;
+    if (newMonth < 0) { newMonth = 11; currentYear--; }
+    else if (newMonth > 11) { newMonth = 0; currentYear++; }
+    currentMonth = newMonth;
+    updatePeriodLabel();
+    renderMonthChart(currentYear, currentMonth);
+  } else if (statsRange === 'year') {
+    currentYear += delta;
+    updatePeriodLabel();
+    renderYearChart(currentYear);
+  }
+}
+function renderWeekChart() {
+  let checkins = state.checkins;
+  let days = 7;
+  let data = [];
+  for (let i = days-1; i >= 0; i--) {
+    let d = new Date();
+    d.setDate(d.getDate() - i);
+    let key = d.toISOString().slice(0,10);
+    let h = checkins[key] ? parseFloat(checkins[key].hours)||0 : 0;
+    data.push({ label: weekAbbr[d.getDay()], hours: h });
+  }
+  let maxH = Math.max(...data.map(d=>d.hours),1);
+  let chart = document.getElementById('week-chart');
+  chart.style.overflowX = 'auto';
+  chart.innerHTML = data.map(d => `
+    <div class="week-bar-wrap">
+      <div class="week-bar-val">${d.hours ? d.hours.toFixed(1) : ''}</div>
+      <div class="week-bar" style="height:${Math.max((d.hours/maxH)*80, d.hours?4:0)}px"></div>
+      <div class="week-bar-label">${d.label}</div>
+    </div>
+  `).join('');
+}
+function renderMonthChart(year, month) {
+  let checkins = state.checkins;
+  let daysInMonth = new Date(year, month+1, 0).getDate();
+  let data = [];
+  for (let d = 1; d <= daysInMonth; d++) {
+    let key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    let h = checkins[key] ? parseFloat(checkins[key].hours)||0 : 0;
+    data.push({ label: `${d}`, hours: h });
+  }
+  let maxH = Math.max(...data.map(d=>d.hours),1);
+  let chart = document.getElementById('week-chart');
+  chart.style.overflowX = 'auto';
+  chart.innerHTML = data.map(d => `
+    <div class="week-bar-wrap">
+      <div class="week-bar-val">${d.hours ? d.hours.toFixed(1) : ''}</div>
+      <div class="week-bar" style="height:${Math.max((d.hours/maxH)*80, d.hours?4:0)}px"></div>
+      <div class="week-bar-label">${d.label}</div>
+    </div>
+  `).join('');
+}
+function renderYearChart(year) {
+  let checkins = state.checkins;
+  let data = [];
+  for (let m = 0; m < 12; m++) {
+    let totalHours = 0;
+    let daysInMonth = new Date(year, m+1, 0).getDate();
+    for (let d = 1; d <= daysInMonth; d++) {
+      let key = `${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      totalHours += checkins[key] ? parseFloat(checkins[key].hours)||0 : 0;
+    }
+    data.push({ label: `${m+1}月`, hours: totalHours });
+  }
+  let maxH = Math.max(...data.map(d=>d.hours),1);
+  let chart = document.getElementById('week-chart');
+  chart.style.overflowX = 'auto';
+  chart.innerHTML = data.map(d => `
+    <div class="week-bar-wrap">
+      <div class="week-bar-val">${d.hours ? d.hours.toFixed(1) : ''}</div>
+      <div class="week-bar" style="height:${Math.max((d.hours/maxH)*80, d.hours?4:0)}px"></div>
+      <div class="week-bar-label">${d.label}</div>
+    </div>
+  `).join('');
+}
+function renderErrorPie() {
+  let container = document.getElementById('error-pie-container');
+  let subjCnt = {};
+  state.wrongs.forEach(w => { subjCnt[w.subject] = (subjCnt[w.subject]||0)+1; });
+  if (Object.keys(subjCnt).length===0) { container.innerHTML = '<div class="empty-state">还没有错题数据</div>'; return; }
+  let total = state.wrongs.length;
+  let entries = Object.entries(subjCnt).sort((a,b)=>b[1]-a[1]);
+  let colors = ['#F0F0C8', '#FED5D6', '#B8D4E3', '#C8E6C2', '#80B0A8', '#90B080', '#E8D078'];
+  let cx=100, cy=100, r=90;
+  let startDeg=0, paths='', labels='';
+  entries.forEach(([subj,count],idx)=>{
+    let ratio = count/total;
+    let endDeg = startDeg + ratio*360;
+    let color = colors[idx%colors.length];
+    let startRad = (startDeg-90)*Math.PI/180;
+    let endRad = (endDeg-90)*Math.PI/180;
+    let x1 = cx + r*Math.cos(startRad), y1 = cy + r*Math.sin(startRad);
+    let x2 = cx + r*Math.cos(endRad), y2 = cy + r*Math.sin(endRad);
+    let largeArc = (endDeg-startDeg)>180?1:0;
+    paths += `<path d="M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z" fill="${color}"/>`;
+    let midDeg = (startDeg+endDeg)/2;
+    let midRad = (midDeg-90)*Math.PI/180;
+    let labelR = r*0.6;
+    let lx = cx + labelR*Math.cos(midRad), ly = cy + labelR*Math.sin(midRad);
+    if (ratio>0.08) {
+      let shortName = subj.length>4 ? subj.substring(0,4) : subj;
+      labels += `<text x="${lx}" y="${ly-4}" text-anchor="middle" font-size="9" font-weight="600" fill="#333">${shortName}</text>`;
+      labels += `<text x="${lx}" y="${ly+8}" text-anchor="middle" font-size="8" fill="#555">${count}题</text>`;
+    }
+    startDeg = endDeg;
+  });
+  container.innerHTML = `<svg viewBox="0 0 200 200">${paths}${labels}</svg>`;
+}
+const progressConfig = { '政治理论&常识判断':150, '判断推理':270, '资料分析':300, '数量关系':150, '言语理解与表达':210, '申论':270 };
+const progressColors = { '政治理论&常识判断':'#A8D5A2','判断推理':'#FED5D6','资料分析':'#C8E6C2','数量关系':'#B8D4E3','言语理解与表达':'#F5E6A3','申论':'#D4C5F9' };
+function renderStudyProgress() {
+  let totalMinutes = {};
+  Object.values(state.checkins).forEach(c => {
+    if (c.subjectMinutes) {
+      Object.entries(c.subjectMinutes).forEach(([subj,mins]) => { totalMinutes[subj] = (totalMinutes[subj]||0)+mins; });
+    }
+  });
+  let container = document.getElementById('study-progress-bars');
+  let html = '';
+  Object.entries(progressConfig).forEach(([subj,maxPoints]) => {
+    let earnedMins = totalMinutes[subj]||0;
+    let points = earnedMins*0.1;
+    let percent = Math.min((points/maxPoints)*100,100);
+    if (isNaN(percent)) percent = 0;
+    let color = progressColors[subj]||'#A8D5A2';
+    html += `<div class="progress-item"><div class="prog-label">${subj}</div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${percent.toFixed(1)}%;background:${color}"></div></div><div class="prog-val">${percent.toFixed(1)}%</div></div>`;
+  });
+  container.innerHTML = html;
+}
 function renderStats() {
-  const checkins = state.checkins;
-  const days = ['一','二','三','四','五','六','日'];
-  const weekData = [];
-  for (let i=6; i>=0; i--) {
-    const d = new Date(); d.setDate(d.getDate()-i);
-    const key = d.toISOString().slice(0,10);
-    const h = checkins[key] ? (parseFloat(checkins[key].hours)||0) : 0;
-    weekData.push({ label: days[d.getDay()===0?6:d.getDay()-1], hours: h, key });
-  }
-  const maxH = Math.max(...weekData.map(d=>d.hours),1);
-  const chartEl = document.getElementById('week-chart');
-  chartEl.innerHTML = weekData.map(d => `<div class="week-bar-wrap"><div style="font-size:10px;color:var(--text2);font-family:'DM Mono',monospace;margin-bottom:4px">${d.hours||''}</div><div class="week-bar" style="height:${Math.max((d.hours/maxH)*60,d.hours?4:0)}px;opacity:${d.hours?0.85:0.2}"></div><div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace">${d.label}</div></div>`).join('');
-  const subjectCounts = {};
-  state.wrongs.forEach(w => { subjectCounts[w.subject] = (subjectCounts[w.subject]||0)+1; });
-  const total = state.wrongs.length || 1;
-  const progressEl = document.getElementById('subject-progress');
-  if (Object.keys(subjectCounts).length===0) progressEl.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:8px 0">还没有错题数据</div>';
-  else progressEl.innerHTML = Object.entries(subjectCounts).sort((a,b)=>b[1]-a[1]).map(([sub,cnt]) => `<div class="progress-item"><div class="progress-subject" style="color:${subjectColors[sub]||'#7c6af7'};font-size:12px">${sub}</div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${(cnt/total*100).toFixed(0)}%;background:${subjectColors[sub]||'#7c6af7'}"></div></div><div class="progress-pct">${cnt}道</div></div>`).join('');
-  const heatEl = document.getElementById('heatmap');
-  let heatHtml = '';
-  for (let i=89; i>=0; i--) {
-    const d = new Date(); d.setDate(d.getDate()-i);
-    const key = d.toISOString().slice(0,10);
-    const h = checkins[key] ? (parseFloat(checkins[key].hours)||0) : 0;
-    let lvl = 0;
-    if (h>0 && h<=2) lvl=1; else if (h>2 && h<=4) lvl=2; else if (h>4 && h<=6) lvl=3; else if (h>6) lvl=4;
-    heatHtml += `<div class="heat-cell ${lvl?'l'+lvl:''}" title="${key}: ${h}h"></div>`;
-  }
-  heatEl.innerHTML = heatHtml;
-  let totalH = 0;
-  Object.values(checkins).forEach(c => totalH += parseFloat(c.hours)||0);
-  const totalDays = Object.keys(checkins).length;
-  const mastered = state.wrongs.filter(w=>w.mastered).length;
-  document.getElementById('total-hours-display').textContent = totalH.toFixed(1)+'h';
-  document.getElementById('total-days-display').textContent = totalDays+'天';
-  document.getElementById('total-wrong-display').textContent = state.wrongs.length+'道';
-  document.getElementById('mastered-display').textContent = mastered+'道';
+  if (statsRange === 'week') renderWeekChart();
+  else if (statsRange === 'month') renderMonthChart(currentYear, currentMonth);
+  else if (statsRange === 'year') renderYearChart(currentYear);
+  renderErrorPie();
+  renderStudyProgress();
 }
 
-// 注册 Service Worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log(err)); });
+// ========== 艾宾浩斯错题复习 ==========
+const ebbing_intervals = [1,2,4,7,15,30];
+function getEbbingReviewList() {
+  let todayKey = todayStr();
+  let todayDate = new Date(todayKey);
+  let reviewList = [];
+  state.wrongs.forEach(w => {
+    if (w.mastered) return;
+    let addedDate = new Date(w.date);
+    let daysSinceAdded = Math.floor((todayDate - addedDate)/86400000);
+    for (let interval of ebbing_intervals) {
+      if (daysSinceAdded === interval) {
+        reviewList.push({ ...w, reviewDay: interval, reviewRound: ebbing_intervals.indexOf(interval)+1 });
+        break;
+      }
+    }
+  });
+  if (reviewList.length===0) {
+    state.wrongs.forEach(w => {
+      if (w.mastered) return;
+      let addedDate = new Date(w.date);
+      let daysSinceAdded = Math.floor((todayDate - addedDate)/86400000);
+      let lastReviewedInterval = 0;
+      for (let interval of ebbing_intervals) { if (daysSinceAdded >= interval) lastReviewedInterval = interval; }
+      if (daysSinceAdded>=1 && lastReviewedInterval>0) {
+        let needsReview = false;
+        for (let interval of ebbing_intervals) {
+          if (daysSinceAdded >= interval && !w[`review_${w.id}_${interval}`]) { needsReview = true; break; }
+        }
+        if (needsReview) reviewList.push({ ...w, reviewDay: daysSinceAdded, reviewRound:0 });
+      }
+    });
+  }
+  return reviewList;
+}
+function renderEbbingReview() {
+  let reviewList = getEbbingReviewList();
+  if (reviewList.length===0) return '';
+  return `<div class="card" style="margin-top:18px;"><div class="card-label">📖 今日错题复习（艾宾浩斯）</div><div style="font-size:12px;color:var(--text-gray);margin-bottom:12px;text-align:center;">根据遗忘曲线推荐复习，共 ${reviewList.length} 题</div>${reviewList.map(w => `<div class="wrong-item" style="margin-bottom:10px;"><div class="wrong-item-top"><div class="wrong-tag" style="background:${progressColors[w.subject]||'#eee'}33;color:${progressColors[w.subject]||'#999'}">${escapeHtml(w.subject)}</div><div class="wrong-date">添加于 ${formatDate(new Date(w.date))} · 第${w.reviewDay}天</div></div><div class="wrong-q">${escapeHtml(w.question)}</div>${w.analysis ? `<details style="margin-top:6px;"><summary style="font-size:12px;color:var(--green-main);cursor:pointer;">查看解析</summary><div class="wrong-analysis" style="margin-top:4px;">💡 ${escapeHtml(w.analysis)}</div></details>` : ''}<div style="margin-top:8px;display:flex;gap:8px;"><button class="cal-action-btn" onclick="markReviewed(${w.id})" style="flex:1;">✅ 已复习</button><button class="cal-action-btn" onclick="toggleMastered(${w.id})" style="flex:1;">🎯 已掌握</button></div></div>`).join('')}</div>`;
+}
+window.markReviewed = function(id) {
+  let w = state.wrongs.find(x=>x.id===id);
+  if (w) {
+    let todayDate = new Date(todayStr());
+    let addedDate = new Date(w.date);
+    let daysSince = Math.floor((todayDate - addedDate)/86400000);
+    for (let interval of ebbing_intervals) { if (daysSince >= interval) w[`review_${w.id}_${interval}`]=true; }
+    save();
+    if (currentWrongCategory) renderWrongList();
+    updateEbbingSection();
+    showToast('✅ 已标记复习');
+  }
+};
+
+
+// ========== 删除指定日期打卡 ==========
+function openDeleteCheckinModal() {
+  document.getElementById('delete-date-input').value = '';
+  document.getElementById('delete-checkin-info').innerHTML = '';
+  document.getElementById('delete-checkin-modal').classList.add('open');
+}
+function closeDeleteCheckinModal(e) {
+  if (!e || e.target === document.getElementById('delete-checkin-modal')) {
+    document.getElementById('delete-checkin-modal').classList.remove('open');
+  }
+}
+function confirmDeleteCheckin() {
+  let dateVal = document.getElementById('delete-date-input').value;
+  if (!dateVal) {
+    showToast('请选择要删除的日期');
+    return;
+  }
+  if (!state.checkins[dateVal]) {
+    showToast('该日期没有打卡记录');
+    return;
+  }
+  if (!confirm(`确定删除 ${dateVal} 的打卡记录吗？\n删除后该天的学时、日记、心情都将消失。`)) return;
+  delete state.checkins[dateVal];
+  save();
+  renderCalendar();                // 刷新日历（心情表情消失）
+  renderDiaryListByMonth();        // 刷新当前月份的日记列表
+  updateHomeStats();               // 更新首页连续打卡和总学时
+  drawSvgPie();                    // 更新饼图（若有影响）
+  if (currentWrongCategory) renderWrongList(); // 如果错题本打开，刷新列表
+  showToast(`已删除 ${dateVal} 的打卡记录`);
+  closeDeleteCheckinModal();
 }
 
-// 启动
-initHome();
-renderCalendar();
-renderWrongList();
+function updateEbbingSection() {
+  let existingEbbing = document.getElementById('ebbing-section');
+  if (existingEbbing) existingEbbing.remove();
+  let ebbingHtml = renderEbbingReview();
+  if (ebbingHtml) {
+    let div = document.createElement('div');
+    div.id = 'ebbing-section';
+    div.innerHTML = ebbingHtml;
+    document.getElementById('page-wrong').appendChild(div);
+  }
+}
+function getMoodImageUrl(moodEmoji) {
+  const map = {
+    '😣': 'icons/crushed.png',
+    '😟': 'icons/anxious.png',
+    '😐': 'icons/okay.png',
+    '😊': 'icons/good.png',
+    '😆': 'icons/awesome.png'
+  };
+  return map[moodEmoji] || null;
+}
+// ========== 初始化 ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initHome();
+  initCalendarDate();
+  renderCalendar();
+  renderWrongCategoryGrid();
+  renderStats();
+  drawSvgPie();
+  document.getElementById('ai-submit-btn').addEventListener('click', submitAiReview);
+  updateEbbingSection();
+  // 初始化日记月份显示（已全局定义，只需调用渲染）
+  renderDiaryListByMonth();
+});
+let _origShowPage = showPage;
+showPage = function(id, btn) {
+  _origShowPage(id, btn);
+  if (id === 'wrong') updateEbbingSection();
+};
+function getCategoryIcon(key) {
+  const iconMap = {
+    '政治理论&常识判断': '政治理论&常识判断.png',
+    '判断推理': '判断推理.png',
+    '资料分析': '资料分析.png',
+    '数量关系': '数量关系.png',
+    '言语理解与表达': '言语理解与表达.png',
+    '申论': '申论.png',
+    '其他': '其他.png'
+  };
+  const fileName = iconMap[key] || 'flower.png';
+  return `<img src="icons/${fileName}" width="32" height="32" style="display:block; margin:0 auto;">`;
+}
+
+function renderWrongCategoryGrid() {
+  let grid = document.getElementById('wrong-category-grid');
+  let totalWrong = state.wrongs.length;
+  let totalMastered = state.wrongs.filter(w => w.mastered).length;
+  document.getElementById('wrong-count-label').innerText = `共 ${totalWrong} 道错题 · 掌握 ${totalMastered} 道题`;
+  grid.innerHTML = wrongCategories.map(cat => {
+    let count = state.wrongs.filter(w => w.subject === cat.key).length;
+    let mastered = state.wrongs.filter(w => w.subject === cat.key && w.mastered).length;
+    return `<div class="wrong-category-card" onclick="openWrongCategory('${cat.key}')" style="border-left:4px solid ${cat.color}">
+              <div class="cat-icon">${getCategoryIcon(cat.key)}</div>
+              <div class="cat-name">${cat.key}</div>
+              <div class="cat-count">${count}题 · 掌握${mastered}</div>
+            </div>`;
+  }).join('');
+}
 </script>
 </body>
 </html>
